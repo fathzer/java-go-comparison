@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Debug Hello",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/main.go",
+            "cwd": "${workspaceFolder}",
+            "args": [],
+            "env": {},
+            "showLog": true
+        },
+        {
+            "name": "Test Hello",
+            "type": "go",
+            "request": "launch",
+            "mode": "test",
+            "program": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}",
+            "args": [],
+            "env": {},
+            "showLog": true
+        }
+    ]
+}

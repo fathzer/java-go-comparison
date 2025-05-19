@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml><project xmlns="https://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.fathzer</groupId>
+		<artifactId>parent-pom</artifactId>
+		<version>1.0.8</version>
+	</parent>
+	<artifactId>hellojava</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<check-dependencies-java-version>17</check-dependencies-java-version>
+	    <maven.compiler.release>17</maven.compiler.release>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>5.10.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+			</plugin>			
+			<!-- Prevent maven from deploying the produced files to local repository -->
+			<plugin>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>3.0.1</version> <!-- IMPORTANT: versions previous 2.4 ignore skip configuration -->
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<!-- Prevent maven from deploying the produced files -->
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.1.2</version>
+				<configuration>
+					<useModulePath>false</useModulePath>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.5.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>com.fathzer.hellojava.Main</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

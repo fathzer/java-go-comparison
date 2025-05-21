@@ -6,11 +6,13 @@ import java.util.Map;
 import com.fathzer.chess.movegenerator.MoveBuilder;
 import com.fathzer.chess.movegenerator.PawnMoveBuilder;
 import com.fathzer.chess.movegenerator.SliderMoveBuilder;
+import com.fathzer.chess.movegenerator.Capturable;
+import com.fathzer.chess.movegenerator.Direction;
 import com.fathzer.chess.movegenerator.KingMoveBuilder;
 import com.fathzer.chess.movegenerator.KnightMoveBuilder;
 
-public enum Piece {
-	BLOCKER('X', true, (l, b, f) -> {}),
+public enum Piece implements Capturable {
+	BLOCKER('X', true, null),
 	WHITE_PAWN('P', true, new PawnMoveBuilder(true)),
 	WHITE_KNIGHT('N', true, new KnightMoveBuilder(true)),
 	WHITE_BISHOP('B', true, new SliderMoveBuilder(new Direction[] { Direction.NORTH_EAST, Direction.NORTH_WEST, Direction.SOUTH_EAST, Direction.SOUTH_WEST }, true)),

@@ -2,10 +2,6 @@ package com.fathzer.chess.movegenerator;
 
 import java.util.List;
 
-import com.fathzer.chess.Board;
-import com.fathzer.chess.Move;
-import com.fathzer.chess.Piece;
-
 public abstract class BasicMoveBuilder implements MoveBuilder {
     private final int[] deltas;
     private final boolean isWhite;
@@ -16,12 +12,12 @@ public abstract class BasicMoveBuilder implements MoveBuilder {
     }
 
     @Override
-    public void build(List<Move> moves, Board board, int from) {
+    public <T> void build(List<T> moves, Explorable board, int from, MoveConstructor<T> moveBuilder) {
         for (int delta : deltas) {
             int to = from + delta;
-            Piece piece = board.getPiece(to);
+            Capturable piece = board.getCapturable(to);
             if (piece == null || piece.canBeCapturedBy(isWhite)) {
-                moves.add(new Move(from, to));
+                moves.add(moveBuilder.create(from, to));
             }
         }
     }

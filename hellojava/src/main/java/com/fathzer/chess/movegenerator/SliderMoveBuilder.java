@@ -3,11 +3,6 @@ package com.fathzer.chess.movegenerator;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fathzer.chess.Board;
-import com.fathzer.chess.Direction;
-import com.fathzer.chess.Move;
-import com.fathzer.chess.Piece;
-
 public final class SliderMoveBuilder implements MoveBuilder {
     private final int[] deltas;
     private final boolean isWhite;
@@ -17,15 +12,15 @@ public final class SliderMoveBuilder implements MoveBuilder {
         this.isWhite = isWhite;
     }
 
-    public void scanDirection(List<Move> moves, Board board, int from, int delta) {
+    public <T> void scanDirection(List<T> moves, Explorable board, int from, int delta, MoveConstructor<T> moveBuilder) {
         int to = from + delta;
         while (true) {
-            Piece piece = board.getPiece(to);
+            Capturable piece = board.getCapturable(to);
             if (piece == null) {
-                moves.add(new Move(from, to));
+                moves.add(moveBuilder.create(from, to));
             } else {
                 if (piece.canBeCapturedBy(isWhite)) {
-                    moves.add(new Move(from, to));
+                    moves.add(moveBuilder.create(from, to));
                 }
                 break;
             }
@@ -34,9 +29,9 @@ public final class SliderMoveBuilder implements MoveBuilder {
     }
 
     @Override
-    public void build(List<Move> moves, Board board, int from) {
+    public <T> void build(List<T> moves, Explorable board, int from, MoveConstructor<T> moveBuilder) {
         for (int delta : deltas) {
-            scanDirection(moves, board, from, delta);
+            scanDirection(moves, board, from, delta, moveBuilder);
         }
     }
 }

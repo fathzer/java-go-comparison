@@ -1,7 +1,5 @@
 package com.fathzer.chess.movegenerator;
 
-import com.fathzer.chess.Direction;
-
 public class KnightMoveBuilder extends BasicMoveBuilder {
     public KnightMoveBuilder(boolean isWhite) {
         super(getDeltas(), isWhite);

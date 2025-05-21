@@ -1,4 +1,4 @@
-package com.fathzer.chess;
+package com.fathzer.chess.movegenerator;
 
 public enum Direction {
     NORTH,

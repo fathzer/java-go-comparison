@@ -2,11 +2,6 @@ package com.fathzer.chess.movegenerator;
 
 import java.util.List;
 
-import com.fathzer.chess.Move;
-import com.fathzer.chess.Piece;
-import com.fathzer.chess.Board;
-import com.fathzer.chess.Direction;
-
 /**
  * Generates moves for pawns.
  * <br>WARNING: This is a very basic implementation. It does not manage en passant, promotion.
@@ -27,24 +22,24 @@ public class PawnMoveBuilder implements MoveBuilder {
     }
     
     @Override
-    public void build(List<Move> moves, Board board, int from) {
+    public <T> void build(List<T> moves, Explorable board, int from, MoveConstructor<T> moveBuilder) {
         int to = from + advanceDelta;
-        if (board.getPiece(to) == null) {
-            moves.add(new Move(from, to));
+        if (board.getCapturable(to) == null) {
+            moves.add(moveBuilder.create(from, to));
             to += advanceDelta;
-            if (twoAdvanceRank == Board.getRank(from) && board.getPiece(to)==null) {
-                moves.add(new Move(from, to));
+            if (twoAdvanceRank == board.getRank(from) && board.getCapturable(to)==null) {
+                moves.add(moveBuilder.create(from, to));
             }
         }
         to = from + captureDeltaWest;
-        Piece captured = board.getPiece(to);
+        Capturable captured = board.getCapturable(to);
         if (captured != null && captured.canBeCapturedBy(isWhite)) {
-            moves.add(new Move(from, to));
+            moves.add(moveBuilder.create(from, to));
         }
         to = from + captureDeltaEast;
-        captured = board.getPiece(to);
+        captured = board.getCapturable(to);
         if (captured != null && captured.canBeCapturedBy(isWhite)) {
-            moves.add(new Move(from, to));
+            moves.add(moveBuilder.create(from, to));
         }
     }
 }

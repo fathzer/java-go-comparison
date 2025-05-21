@@ -13,6 +13,14 @@ import com.fathzer.chess.Move;
  * Base class for testing MoveBuilder implementations.
  */
 public interface MoveBuilderTest {
+    public static class CoolBoard extends Board {
+        public CoolBoard(String fen) {
+            super(fen);
+        }
+        public Explorable getExplorable() {
+            return explorable;
+        }
+    }
     
     /**
      * Tests that the move builder generates the expected moves for a given position.
@@ -23,11 +31,11 @@ public interface MoveBuilderTest {
      */
     default void testMoves(String fen, String fromSquare, String expectedDestinations, MoveBuilder builder) {
         // Create board and builder
-        final Board board = new Board(fen);
+        final CoolBoard board = new CoolBoard(fen);
         
         // Generate moves
         final List<Move> moves = new LinkedList<>();
-        builder.build(moves, board, Board.getSquare(fromSquare));
+        builder.build(moves, board.getExplorable(), Board.getSquare(fromSquare), Move::new);
         
         // Verify moves
         testMoves(parseMoveList(fromSquare, expectedDestinations), moves);

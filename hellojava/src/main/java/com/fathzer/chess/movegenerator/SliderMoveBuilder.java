@@ -6,7 +6,7 @@ import java.util.List;
 import com.fathzer.chess.Board;
 import com.fathzer.chess.Direction;
 import com.fathzer.chess.Move;
-import com.fathzer.chess.BoardContent;
+import com.fathzer.chess.Piece;
 
 public final class SliderMoveBuilder implements MoveBuilder {
     private final int[] deltas;
@@ -20,7 +20,7 @@ public final class SliderMoveBuilder implements MoveBuilder {
     public void scanDirection(List<Move> moves, Board board, int from, int delta) {
         int to = from + delta;
         while (true) {
-            BoardContent piece = board.getContent(to);
+            Piece piece = board.getPiece(to);
             if (piece == null) {
                 moves.add(new Move(from, to));
             } else {
@@ -34,10 +34,9 @@ public final class SliderMoveBuilder implements MoveBuilder {
     }
 
     @Override
-    public List<Move> build(List<Move> moves, Board board, int from) {
+    public void build(List<Move> moves, Board board, int from) {
         for (int delta : deltas) {
             scanDirection(moves, board, from, delta);
         }
-        return moves;
     }
 }

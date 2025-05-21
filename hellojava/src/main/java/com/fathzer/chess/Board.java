@@ -1,5 +1,7 @@
 package com.fathzer.chess;
 
+import static com.fathzer.chess.Piece.BLOCKER;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,12 +11,12 @@ import java.util.List;
  * It lacks important features like king safety, en passant, castling, promotion.
  */
 public class Board {
-    private final BoardContent[] content;
+    private final Piece[] pieces;
 	private final List<Move> playedMoves;
 	private final List<Piece> captures;
 
 	public Board(Board copy) {
-		this.content = copy.content.clone();
+		this.pieces = copy.pieces.clone();
 		this.playedMoves = new LinkedList<>(copy.playedMoves);
 		this.playedMoves.addAll(copy.playedMoves);
 		this.captures = new LinkedList<>(copy.captures);
@@ -24,7 +26,7 @@ public class Board {
     public Board(String fen) {
 		this.playedMoves = new LinkedList<>();
 		this.captures = new LinkedList<>();
-        this.content = new BoardContent[120];
+        this.pieces = new Piece[120];
         fillBlockers();
 		int rank = 7;
 		int file = 0;
@@ -46,10 +48,10 @@ public class Board {
 				rank--;
 			} else {
 				final Piece piece = Piece.fromCode(c);
-				if (piece == null) {
+				if (piece == null || piece==BLOCKER) {
 					throw new IllegalArgumentException("Invalid FEN: unknown piece " + c);
 				}
-				this.content[21+rank*10+file] = piece;
+				this.pieces[21+rank*10+file] = piece;
 				file++;
 			}
 		}
@@ -62,12 +64,12 @@ public class Board {
     }
     
     private void fillBlockers() {
-    	Arrays.fill(content, 0, 20, Blocker.INSTANCE);
-    	Arrays.fill(content, 100, 120, Blocker.INSTANCE);
+    	Arrays.fill(pieces, 0, 20, BLOCKER);
+    	Arrays.fill(pieces, 100, 120, BLOCKER);
     	for (int i=2; i<10; i++) {
 			final int startRank = i*10;
-    		content[startRank] = Blocker.INSTANCE;
-    		content[startRank+9] = Blocker.INSTANCE;
+    		pieces[startRank] = BLOCKER;
+    		pieces[startRank+9] = BLOCKER;
     	}
     }
 	
@@ -93,19 +95,19 @@ public class Board {
 	}
 
 	public Piece getPiece(String uciSquare) {
-		return (Piece)content[getSquare(uciSquare)];
+		return pieces[getSquare(uciSquare)];
 	}
 
-	public BoardContent getContent(int square) {
-		return content[square];
+	public Piece getPiece(int square) {
+		return pieces[square];
 	}
 
 	public List<Move> getMoves(boolean white) {
 		final List<Move> moves = new LinkedList<>();
 		for (int square = 20; square < 100; square++) {
-			BoardContent squareContent = getContent(square);
-			if (squareContent != null && squareContent.canMove() && ((Piece)squareContent).isWhite()==white) {
-				((Piece)squareContent).getMoveBuilder().build(moves, this, square);
+			Piece piece = getPiece(square);
+			if (piece != null && piece!=BLOCKER && (piece).isWhite()==white) {
+				(piece).getMoveBuilder().build(moves, this, square);
 			}
 		}
 		return moves;
@@ -120,17 +122,17 @@ public class Board {
 		if (from<20 || from>119 || to<20 || to>119) {
 			throw new IllegalArgumentException("Illegal move");
 		}
-		BoardContent movingPiece = content[from];
-		BoardContent capturedPiece = content[to];
-		if (movingPiece==null || !movingPiece.canMove() || (capturedPiece!=null && !capturedPiece.canBeCapturedBy(((Piece)movingPiece).isWhite()))) {
+		Piece movingPiece = pieces[from];
+		Piece capturedPiece = pieces[to];
+		if (movingPiece==null || movingPiece==BLOCKER || (capturedPiece!=null && !capturedPiece.canBeCapturedBy(((Piece)movingPiece).isWhite()))) {
 			throw new IllegalArgumentException("Illegal move");
 		}
 	    // Store the captured piece (if any)
-	    captures.add((Piece)content[to]);
+	    captures.add(pieces[to]);
 	    
 	    // Move the piece
-	    content[to] = content[from];
-	    content[from] = null; // Empty the source square
+	    pieces[to] = pieces[from];
+	    pieces[from] = null; // Empty the source square
 	    
 	    // Record the move
 	    playedMoves.add(move);
@@ -147,10 +149,10 @@ public class Board {
 	    int to = lastMove.to();
 	    
 	    // Restore the moved piece
-	    content[from] = content[to];
+	    pieces[from] = pieces[to];
 	    
 	    // Restore the captured piece (if any)
-	    content[to] = captures.remove(captures.size() - 1);
+	    pieces[to] = captures.remove(captures.size() - 1);
 	}
 
 	@Override

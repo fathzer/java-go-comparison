@@ -9,7 +9,8 @@ import com.fathzer.chess.movegenerator.SliderMoveBuilder;
 import com.fathzer.chess.movegenerator.KingMoveBuilder;
 import com.fathzer.chess.movegenerator.KnightMoveBuilder;
 
-public enum Piece implements BoardContent {
+public enum Piece {
+	BLOCKER('X', true, (l, b, f) -> {}),
 	WHITE_PAWN('P', true, new PawnMoveBuilder(true)),
 	WHITE_KNIGHT('N', true, new KnightMoveBuilder(true)),
 	WHITE_BISHOP('B', true, new SliderMoveBuilder(new Direction[] { Direction.NORTH_EAST, Direction.NORTH_WEST, Direction.SOUTH_EAST, Direction.SOUTH_WEST }, true)),
@@ -56,8 +57,7 @@ public enum Piece implements BoardContent {
 		return moveBuilder;
 	}
 
-    @Override
     public boolean canBeCapturedBy(boolean white) {
-        return white != isWhite;
+        return this!=Piece.BLOCKER && white != isWhite;
     }
 }

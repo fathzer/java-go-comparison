@@ -26,7 +26,8 @@ public interface MoveBuilderTest {
         final Board board = new Board(fen);
         
         // Generate moves
-        final List<Move> moves = builder.build(new LinkedList<>(), board, Board.getSquare(fromSquare));
+        final List<Move> moves = new LinkedList<>();
+        builder.build(moves, board, Board.getSquare(fromSquare));
         
         // Verify moves
         testMoves(parseMoveList(fromSquare, expectedDestinations), moves);

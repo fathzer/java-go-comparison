@@ -3,8 +3,8 @@ package com.fathzer.chess.movegenerator;
 import java.util.List;
 
 import com.fathzer.chess.Move;
+import com.fathzer.chess.Piece;
 import com.fathzer.chess.Board;
-import com.fathzer.chess.BoardContent;
 import com.fathzer.chess.Direction;
 
 /**
@@ -27,25 +27,24 @@ public class PawnMoveBuilder implements MoveBuilder {
     }
     
     @Override
-    public List<Move> build(List<Move> moves, Board board, int from) {
+    public void build(List<Move> moves, Board board, int from) {
         int to = from + advanceDelta;
-        if (board.getContent(to) == null) {
+        if (board.getPiece(to) == null) {
             moves.add(new Move(from, to));
             to += advanceDelta;
-            if (twoAdvanceRank == Board.getRank(from) && board.getContent(to)==null) {
+            if (twoAdvanceRank == Board.getRank(from) && board.getPiece(to)==null) {
                 moves.add(new Move(from, to));
             }
         }
         to = from + captureDeltaWest;
-        BoardContent captured = board.getContent(to);
+        Piece captured = board.getPiece(to);
         if (captured != null && captured.canBeCapturedBy(isWhite)) {
             moves.add(new Move(from, to));
         }
         to = from + captureDeltaEast;
-        captured = board.getContent(to);
+        captured = board.getPiece(to);
         if (captured != null && captured.canBeCapturedBy(isWhite)) {
             moves.add(new Move(from, to));
         }
-        return moves;
     }
 }

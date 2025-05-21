@@ -22,7 +22,7 @@ class BoardTest implements MoveBuilderTest {
         assertEquals(Piece.WHITE_QUEEN, board.getPiece("d1"));
 
         // Test that blockers are set correctly
-        IntConsumer expectBlocker = i -> assertEquals(Blocker.INSTANCE, board.getContent(i), "expected blocker at " + i);
+        IntConsumer expectBlocker = i -> assertEquals(Piece.BLOCKER, board.getPiece(i), "expected blocker at " + i);
         IntStream.range(0, 20).forEach(expectBlocker);
         IntStream.range(100, 120).forEach(expectBlocker);
     }

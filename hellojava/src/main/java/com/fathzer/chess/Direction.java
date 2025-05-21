@@ -12,14 +12,14 @@ public enum Direction {
 
     public int getDelta() {
         switch (this) {
-            case NORTH: return +8;
-            case SOUTH: return -8;
+            case NORTH: return +10;
+            case SOUTH: return -10;
             case EAST: return +1;
             case WEST: return -1;
-            case NORTH_EAST: return +9;
-            case NORTH_WEST: return +7;
+            case NORTH_EAST: return +11;
+            case NORTH_WEST: return +9;
             case SOUTH_EAST: return -9;
-            case SOUTH_WEST: return -7;
+            case SOUTH_WEST: return -11;
             default: return 0;
         }
     }

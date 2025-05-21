@@ -6,7 +6,7 @@ import java.util.List;
 import com.fathzer.chess.Board;
 import com.fathzer.chess.Direction;
 import com.fathzer.chess.Move;
-import com.fathzer.chess.Piece;
+import com.fathzer.chess.BoardContent;
 
 public final class SliderMoveBuilder implements MoveBuilder {
     private final int[] deltas;
@@ -19,12 +19,12 @@ public final class SliderMoveBuilder implements MoveBuilder {
 
     public void scanDirection(List<Move> moves, Board board, int from, int delta) {
         int to = from + delta;
-        while (to >= 0 && to < 64) {
-            Piece piece = board.getPiece(to);
+        while (true) {
+            BoardContent piece = board.getContent(to);
             if (piece == null) {
                 moves.add(new Move(from, to));
             } else {
-                if (piece.isWhite() != isWhite) {
+                if (piece.canBeCapturedBy(isWhite)) {
                     moves.add(new Move(from, to));
                 }
                 break;

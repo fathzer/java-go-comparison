@@ -1,20 +1,19 @@
 package com.fathzer.chess;
 
 public record Move(int from, int to) {
-    public Move(int fromRank, int fromFile, int toRank, int toFile) {
-        this(fromRank*8+fromFile, toRank*8+toFile);
+    public static Move fromUCI(String uci) {
+        if (uci.length() != 4) {
+            throw new IllegalArgumentException("Invalid UCI move: " + uci);
+        }
+        return new Move(Board.getSquare(uci.substring(0, 2)), Board.getSquare(uci.substring(2)));
     }
     
-    public Move(int from, int to) {
-        if (from < 0 || from > 63 || to < 0 || to > 63 || from == to) {
-            throw new IllegalArgumentException("Invalid move");
-        }
-        this.from = from;
-        this.to = to;
+    public Move(String from, String to) {
+        this(Board.getSquare(from), Board.getSquare(to));
     }
 
     @Override
     public String toString() {
-        return Notation.toUCI(from/8, from%8) + Notation.toUCI(to/8, to%8);
+        return Board.getUCI(from) + Board.getUCI(to);
     }
 }

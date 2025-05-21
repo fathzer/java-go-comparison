@@ -13,21 +13,10 @@ class MoveTest {
         assertEquals(16, move.to());
     }
 
-    
-    @Test
-    void testInvalidMove() {
-        // Test invalid from/to indices
-        assertThrows(IllegalArgumentException.class, () -> new Move(-1, 0));
-        assertThrows(IllegalArgumentException.class, () -> new Move(0, -1));
-        assertThrows(IllegalArgumentException.class, () -> new Move(64, 0));
-        assertThrows(IllegalArgumentException.class, () -> new Move(0, 64));
-        assertThrows(IllegalArgumentException.class, () -> new Move(10, 10));
-    }
-    
     @Test
     void testToString() {
         // Test standard move
-        Move e2e4 = new Move(1, 4 , 3, 4); // e2 to e4
+        Move e2e4 = new Move("e2", "e4"); // e2 to e4
         assertEquals("e2e4", e2e4.toString());
     }
     

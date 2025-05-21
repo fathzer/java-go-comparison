@@ -9,7 +9,7 @@ import com.fathzer.chess.movegenerator.SliderMoveBuilder;
 import com.fathzer.chess.movegenerator.KingMoveBuilder;
 import com.fathzer.chess.movegenerator.KnightMoveBuilder;
 
-public enum Piece {
+public enum Piece implements BoardContent {
 	WHITE_PAWN('P', true, new PawnMoveBuilder(true)),
 	WHITE_KNIGHT('N', true, new KnightMoveBuilder(true)),
 	WHITE_BISHOP('B', true, new SliderMoveBuilder(new Direction[] { Direction.NORTH_EAST, Direction.NORTH_WEST, Direction.SOUTH_EAST, Direction.SOUTH_WEST }, true)),
@@ -32,12 +32,12 @@ public enum Piece {
 
 	private final char code;
 	private final boolean isWhite;
-	private final MoveBuilder scanner;
+	private final MoveBuilder moveBuilder;
 
 	private Piece(char code, boolean isWhite, MoveBuilder scanner) {
 		this.code = code;
 		this.isWhite = isWhite;
-		this.scanner = scanner;
+		this.moveBuilder = scanner;
 	}
 
 	public static Piece fromCode(char code) {
@@ -52,7 +52,12 @@ public enum Piece {
 		return isWhite;
 	}
 
-	public MoveBuilder getScanner() {
-		return scanner;
+	public MoveBuilder getMoveBuilder() {
+		return moveBuilder;
 	}
+
+    @Override
+    public boolean canBeCapturedBy(boolean white) {
+        return white != isWhite;
+    }
 }

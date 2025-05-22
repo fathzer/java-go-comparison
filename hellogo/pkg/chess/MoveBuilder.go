@@ -1,8 +1,8 @@
 package chess
 
 // MoveConstructor creates a move from two indices.
-type MoveConstructor interface {
-	Create(from, to int) interface{}
+type MoveConstructor[T any] interface {
+	Create(from, to int) T
 }
 
 // Capturable represents a piece that can be captured.
@@ -17,6 +17,6 @@ type Explorable interface {
 }
 
 // MoveBuilder scans the board for legal moves from a given square.
-type MoveBuilder interface {
-	Build(moves interface{}, board Explorable, from int, moveBuilder MoveConstructor)
+type MoveBuilder[T any] interface {
+	Build(moves *[]T, board Explorable, from int, moveBuilder MoveConstructor[T])
 }

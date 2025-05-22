@@ -117,7 +117,7 @@ func (b *Board) GetMoves(white bool) []Move {
 		if piece != nil && *piece != BLOCKER && piece.IsWhite == white {
 			mb := GetMoveBuilder(piece)
 			if mb != nil {
-				mb.Build(&moves, b, square, moveBuilder)
+				mb.Build(moves, b, square, moveBuilder)
 			}
 		}
 	}

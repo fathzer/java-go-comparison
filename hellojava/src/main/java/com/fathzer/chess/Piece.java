@@ -23,7 +23,9 @@ public enum Piece implements Capturable {
 	private static final Map<Character, Piece> CODE_TO_PIECE = new HashMap<>();
 	static {
 		for (Piece piece : values()) {
-			CODE_TO_PIECE.put(piece.code, piece);
+			if (piece != BLOCKER) {
+				CODE_TO_PIECE.put(piece.code, piece);
+			}
 		}
 	}
 

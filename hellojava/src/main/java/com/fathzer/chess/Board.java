@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.fathzer.chess.movegenerator.Capturable;
-import com.fathzer.chess.movegenerator.Explorable;
+import com.fathzer.chess.MoveBuilder.Capturable;
+import com.fathzer.chess.MoveBuilder.Explorable;
 
 /** A tiny chess board
  * WARNING: This is a very basic implementation. It is not a chess move generator.
@@ -86,7 +86,7 @@ public class Board {
     	}
     }
 	
-	public static int getSquare(String uciSquare) {
+	static int getSquare(String uciSquare) {
 		if (uciSquare.length() != 2) {
 			throw new IllegalArgumentException("Invalid UCI square: " + uciSquare);
 		}
@@ -102,7 +102,7 @@ public class Board {
 		return (square-21)/10;
 	}
 	
-	public static String getUCI(int square) {
+	static String getUCI(int square) {
 		square -= 21;
 		return (char)(square%10 + 'a') + "" +(square/10 + 1);
 	}
@@ -111,7 +111,7 @@ public class Board {
 		return pieces[getSquare(uciSquare)];
 	}
 
-	public Piece getPiece(int square) {
+	Piece getPiece(int square) {
 		return pieces[square];
 	}
 
@@ -120,7 +120,7 @@ public class Board {
 		for (int square = 20; square < 100; square++) {
 			Piece piece = getPiece(square);
 			if (piece != null && piece!=BLOCKER && piece.isWhite()==white) {
-				piece.getMoveBuilder().build(moves, explorable, square, Move::new);
+				MoveGenerators.get(piece).build(moves, explorable, square, Move::new);
 			}
 		}
 		return moves;

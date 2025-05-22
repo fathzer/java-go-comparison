@@ -2,16 +2,16 @@ package com.fathzer.chess;
 
 import org.junit.jupiter.api.Test;
 
-import com.fathzer.chess.movegenerator.MoveBuilderTest;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import static com.fathzer.chess.MoveGeneratorsTest.*;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
 
-class BoardTest implements MoveBuilderTest {
+class BoardTest {
 
     @Test
     void testFenParsing() {

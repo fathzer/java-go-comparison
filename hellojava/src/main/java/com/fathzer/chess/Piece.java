@@ -3,28 +3,22 @@ package com.fathzer.chess;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fathzer.chess.movegenerator.MoveBuilder;
-import com.fathzer.chess.movegenerator.PawnMoveBuilder;
-import com.fathzer.chess.movegenerator.SliderMoveBuilder;
-import com.fathzer.chess.movegenerator.Capturable;
-import com.fathzer.chess.movegenerator.Direction;
-import com.fathzer.chess.movegenerator.KingMoveBuilder;
-import com.fathzer.chess.movegenerator.KnightMoveBuilder;
+import com.fathzer.chess.MoveBuilder.Capturable;
 
 public enum Piece implements Capturable {
-	BLOCKER('X', true, null),
-	WHITE_PAWN('P', true, new PawnMoveBuilder(true)),
-	WHITE_KNIGHT('N', true, new KnightMoveBuilder(true)),
-	WHITE_BISHOP('B', true, new SliderMoveBuilder(new Direction[] { Direction.NORTH_EAST, Direction.NORTH_WEST, Direction.SOUTH_EAST, Direction.SOUTH_WEST }, true)),
-	WHITE_ROOK('R', true, new SliderMoveBuilder(new Direction[] { Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST }, true)),
-	WHITE_QUEEN('Q', true, new SliderMoveBuilder(new Direction[] { Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.NORTH_EAST, Direction.NORTH_WEST, Direction.SOUTH_EAST, Direction.SOUTH_WEST }, true)),
-	WHITE_KING('K', true, new KingMoveBuilder(true)),
-	BLACK_PAWN('p', false, new PawnMoveBuilder(false)),
-	BLACK_KNIGHT('n', false, new KnightMoveBuilder(false)),
-	BLACK_BISHOP('b', false, new SliderMoveBuilder(new Direction[] { Direction.NORTH_EAST, Direction.NORTH_WEST, Direction.SOUTH_EAST, Direction.SOUTH_WEST }, false)),
-	BLACK_ROOK('r', false, new SliderMoveBuilder(new Direction[] { Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST }, false)),
-	BLACK_QUEEN('q', false, new SliderMoveBuilder(new Direction[] { Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.NORTH_EAST, Direction.NORTH_WEST, Direction.SOUTH_EAST, Direction.SOUTH_WEST }, false)),
-	BLACK_KING('k', false, new KingMoveBuilder(false));
+	BLOCKER('X', true),
+	WHITE_PAWN('P', true),
+	WHITE_KNIGHT('N', true),
+	WHITE_BISHOP('B', true),
+	WHITE_ROOK('R', true),
+	WHITE_QUEEN('Q', true),
+	WHITE_KING('K', true),
+	BLACK_PAWN('p', false),
+	BLACK_KNIGHT('n', false),
+	BLACK_BISHOP('b', false),
+	BLACK_ROOK('r', false),
+	BLACK_QUEEN('q', false),
+	BLACK_KING('k', false);
 
 	private static final Map<Character, Piece> CODE_TO_PIECE = new HashMap<>();
 	static {
@@ -35,12 +29,10 @@ public enum Piece implements Capturable {
 
 	private final char code;
 	private final boolean isWhite;
-	private final MoveBuilder moveBuilder;
 
-	private Piece(char code, boolean isWhite, MoveBuilder scanner) {
+	private Piece(char code, boolean isWhite) {
 		this.code = code;
 		this.isWhite = isWhite;
-		this.moveBuilder = scanner;
 	}
 
 	public static Piece fromCode(char code) {
@@ -55,10 +47,7 @@ public enum Piece implements Capturable {
 		return isWhite;
 	}
 
-	public MoveBuilder getMoveBuilder() {
-		return moveBuilder;
-	}
-
+    @Override
     public boolean canBeCapturedBy(boolean white) {
         return this!=Piece.BLOCKER && white != isWhite;
     }

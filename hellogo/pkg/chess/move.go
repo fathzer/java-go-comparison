@@ -20,27 +20,15 @@ func MoveFromUCI(uci string) (Move, error) {
 	if len(uci) != 4 {
 		return Move{}, fmt.Errorf("invalid UCI move: %s", uci)
 	}
-	from, err := GetSquare(uci[:2])
-	if err != nil {
-		return Move{}, err
-	}
-	to, err := GetSquare(uci[2:])
-	if err != nil {
-		return Move{}, err
-	}
+	from := GetSquare(uci[:2])
+	to := GetSquare(uci[2:])
 	return Move{from: from, to: to}, nil
 }
 
 // NewMoveFromStrings creates a Move from two square strings (e.g. "e2", "e4").
 func NewMoveFromStrings(fromStr, toStr string) (Move, error) {
-	from, err := GetSquare(fromStr)
-	if err != nil {
-		return Move{}, err
-	}
-	to, err := GetSquare(toStr)
-	if err != nil {
-		return Move{}, err
-	}
+	from := GetSquare(fromStr)
+	to := GetSquare(toStr)
 	return Move{from: from, to: to}, nil
 }
 
@@ -61,28 +49,6 @@ func (m Move) Equals(other Move) bool {
 
 // String returns the move in UCI notation.
 func (m Move) String() string {
+	// Assuming GetUCI is a function that converts square index to UCI notation.
 	return GetUCI(m.from) + GetUCI(m.to)
-}
-
-// --- Helper functions for square conversion ---
-// These are placeholders; implement them to match your Board logic.
-
-func GetSquare(uciSquare string) (int, error) {
-	if len(uciSquare) != 2 {
-		return 0, fmt.Errorf("invalid UCI square: %s", uciSquare)
-	}
-	file := uciSquare[0]
-	rank := uciSquare[1]
-	if rank < '1' || rank > '8' || file < 'a' || file > 'h' {
-		return 0, fmt.Errorf("invalid UCI square: %s", uciSquare)
-	}
-	// 21+ 10*(rank-1) + (file-'a')
-	return 21 + 10*int(rank-'1') + int(file-'a'), nil
-}
-
-func GetUCI(square int) string {
-	sq := square - 21
-	file := sq % 10
-	rank := sq / 10
-	return fmt.Sprintf("%c%d", 'a'+file, rank+1)
 }

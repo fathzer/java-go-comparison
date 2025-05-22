@@ -46,27 +46,23 @@ final class MoveGenerators {
     }
     
     private enum Direction {
-        NORTH,
-        SOUTH,
-        EAST,
-        WEST,
-        NORTH_EAST,
-        NORTH_WEST,
-        SOUTH_EAST,
-        SOUTH_WEST;
+        NORTH(ROW_WIDTH),
+        SOUTH(-ROW_WIDTH),
+        EAST(+1),
+        WEST(-1),
+        NORTH_EAST(ROW_WIDTH+1),
+        NORTH_WEST(ROW_WIDTH-1),
+        SOUTH_EAST(-ROW_WIDTH+1),
+        SOUTH_WEST(-ROW_WIDTH-1);
+
+        private final int delta;
+
+        private Direction(int delta) {
+            this.delta = delta;
+        }
     
         public int getDelta() {
-            switch (this) {
-                case NORTH: return ROW_WIDTH;
-                case SOUTH: return -ROW_WIDTH;
-                case EAST: return +1;
-                case WEST: return -1;
-                case NORTH_EAST: return +ROW_WIDTH+1;
-                case NORTH_WEST: return +ROW_WIDTH-1;
-                case SOUTH_EAST: return -ROW_WIDTH+1;
-                case SOUTH_WEST: return -ROW_WIDTH-1;
-                default: return 0;
-            }
+            return delta;
         }
     }
     

@@ -8,6 +8,17 @@ type Piece struct {
 	IsWhite bool
 }
 
+// Equals checks if two pieces are equal.
+func (p *Piece) Equals(other *Piece) bool {
+	if p == other {
+		return true
+	}
+	if p == nil || other == nil {
+		return false
+	}
+	return p.Code == other.Code && p.IsWhite == other.IsWhite
+}
+
 var (
 	BLOCKER      = Piece{'X', true}
 	WHITE_PAWN   = Piece{'P', true}

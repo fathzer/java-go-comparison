@@ -139,7 +139,7 @@ class BoardTest {
         final List<Move> whiteMoves = board.getMoves(true);
         List<Move> expected = new LinkedList<>();
         expected.addAll(parseMoveList("a1", "a2 b1 c1 d1 e1 f1 g1 h1"));
-        expected.addAll(parseMoveList("b2", "a2 a3 b3 b3 c2 c1 b1"));
+        expected.addAll(parseMoveList("b2", "a3 b3 c3 a2 c2 b1 c1"));
         testMoves(expected, whiteMoves);
         final List<Move> blackMoves = board.getMoves(false);
         testMoves(parseMoveList("b4", "a5 b5 c5 a4 c4 a3 b3 c3"), blackMoves);

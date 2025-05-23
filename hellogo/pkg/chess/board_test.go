@@ -73,8 +73,8 @@ func TestInvalidFenThrows(t *testing.T) {
 		name string
 		fen  string
 	}{
-		{"badFileCount1", "rnbqkbnr/pppppppp/9/8/8/8/PPPPPPPP/RNBQKBNR"}, // 9 is invalid
-		{"badFileCount2", "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBN"},    // Last row missed one file
+		{"badFileCount1", "rnbqkbnr/pppppppp/9/8/8/8/PPPPPPPP/RNBQKBNR"},  // 9 is invalid
+		{"badFileCount2", "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBN"},   // Last row missed one file
 		{"badFileCount3", "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPP2/RNBQKBNR"},  // 7th row has an extra file
 		{"badRankCount1", "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR/"}, // Extra rank
 		{"badRankCount2", "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP"},           // Missing rank
@@ -94,7 +94,6 @@ func TestInvalidFenThrows(t *testing.T) {
 func TestMakeMove(t *testing.T) {
 	// Start with initial position
 	board, _ := NewBoard(startingFEN)
-
 
 	// Make a pawn move e2-e4
 	move, _ := NewMoveFromStrings("e2", "e4")
@@ -137,11 +136,9 @@ func TestUnmakeMove(t *testing.T) {
 	original, _ := NewBoard(startingFEN)
 	board := NewBoardCopy(original)
 
-
 	// Make a move e2-e4
 	move, _ := NewMoveFromStrings("e2", "e4")
 	board.MakeMove(move)
-
 
 	// Unmake the move
 	err := board.UnmakeMove()
@@ -200,19 +197,19 @@ func TestUnmakeWithoutMoves(t *testing.T) {
 
 func TestGetMoves(t *testing.T) {
 	board, _ := NewBoard("8/8/8/8/1k6/8/pK6/Q7")
-	
+
 	// Test white moves
 	whiteMoves := board.GetMoves(true)
 	expectedWhiteMoves := []Move{}
-	
+
 	// Add queen moves
 	for _, to := range []string{"a2", "b1", "c1", "d1", "e1", "f1", "g1", "h1"} {
 		m, _ := NewMoveFromStrings("a1", to)
 		expectedWhiteMoves = append(expectedWhiteMoves, m)
 	}
-	
-	// Add king moves (removing duplicates with queen moves)
-	for _, to := range []string{"a3", "b3", "c3", "c2", "c1"} {
+
+	// Add king moves
+	for _, to := range []string{"a3", "b3", "c3", "a2", "c2", "b1", "c1"} {
 		m, _ := NewMoveFromStrings("b2", to)
 		expectedWhiteMoves = append(expectedWhiteMoves, m)
 	}
@@ -236,7 +233,7 @@ func TestGetMoves(t *testing.T) {
 			}
 		}
 		if !found {
-			t.Errorf("Expected move %s -> %s not found in actual moves", 
+			t.Errorf("Expected move %s -> %s not found in actual moves",
 				GetUCI(expected.From()), GetUCI(expected.To()))
 		}
 	}

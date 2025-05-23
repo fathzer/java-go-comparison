@@ -10,6 +10,13 @@ public class Flags {
         return piLoops;
     }
 
+    public static int parsePerftDepth(String[] args) {
+        int perftDepth = 5; // default value
+        perftDepth = parseIntegerArgument(args, "--perftDepth=", perftDepth);
+        perftDepth = parseIntegerArgument(args, "-pd=", perftDepth);
+        return perftDepth;
+    }
+
     private static int parseIntegerArgument(String[] args, String prefix, int defaultValue) {
         for (String arg : args) {
             if (arg.startsWith(prefix)) {
@@ -24,7 +31,8 @@ public class Flags {
     }
 
     public static void printUsage() {
-        System.out.println("Usage: java Main [--piLoops=<number>]");
+        System.out.println("Usage: java Main [--piLoops=<number>] [--perftDepth=<number>]");
         System.out.println("  --piLoops=<number>  Number of Pi calculations to perform (default: 2000)");
+        System.out.println("  --perftDepth=<number>  Depth of Perft (Performance Test) to perform (default: 5)");
     }
 }

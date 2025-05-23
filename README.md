@@ -8,7 +8,7 @@ The goal of this project was, for me, to compare the two languages in terms of:
 
 The [hellogo](hellogo) and [hellojava](hellojava) folders contain a simple program, respectively in Go and Java, that is supposed (except if some bugs remains) have the same behavior.
 
-I precise that I'm Go newby, so I might have done some things in a suboptimal way. I develop in Java for a long time, so I might have done most things in a Java-like way.
+I precise that I'm Go newby, most of the GO code has been translated by AI (ChatGPT 4.1 and SWE-1), so it might be suboptimal. I develop in Java for a long time, so I might have done most things in a Java-like way.
 
 ## Contents
 

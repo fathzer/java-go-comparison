@@ -132,19 +132,7 @@ func (b *Board) GetMoves(white bool) []Move {
 		piece := b.pieces[square]
 		if piece != nil && piece != &BLOCKER && piece.IsWhite == white {
 			generator := GetMoveGenerator(piece)
-			if generator == nil {
-				fmt.Printf("No generator found for piece %c at %s\n", piece.Code, GetUCI(square))
-			} else {
-				beforeLen := len(moves)
-				generator.Build(&moves, b, square)
-				if len(moves) > beforeLen {
-					fmt.Printf("Generated %d moves for %c at %s: %v\n", 
-						len(moves) - beforeLen, piece.Code, GetUCI(square), 
-						moves[beforeLen:])
-				} else {
-					fmt.Printf("No moves generated for %c at %s\n", piece.Code, GetUCI(square))
-				}
-			}
+			generator.Build(&moves, b, square)
 		}
 	}
 
@@ -176,7 +164,6 @@ func (b *Board) MakeMove(move Move) error {
 
 	// Store the captured piece (if any)
 	b.captures = append(b.captures, capturedPiece)
-
 
 	// Move the piece
 	b.pieces[to] = movingPiece

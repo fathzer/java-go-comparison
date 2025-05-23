@@ -28,6 +28,7 @@ var (
 )
 
 // MoveGenerators holds move builder singletons.
+// TODO This should probably be in a separate file with explicit reference to Move as ChatGPT has a lot of problem with it
 type MoveGenerators struct{}
 
 var (

@@ -33,40 +33,46 @@ var (
 	blackPawnMoveBuilder   = &pawnMoveBuilder{isWhite: false}
 )
 
-// GetMoveGenerator returns the appropriate move generator for a given piece.
-func GetMoveGenerator(piece *Piece) MoveBuilder {
-	if piece == nil {
-		return nil
+// moveGeneratorMap maps piece codes to their corresponding move builders.
+var moveGeneratorMap []MoveBuilder
+
+func init() {
+	// Initialize the move generator map with enough capacity for all piece codes
+	pieces := []Piece{WHITE_KING, BLACK_KING, WHITE_QUEEN, BLACK_QUEEN, 
+		WHITE_ROOK, BLACK_ROOK, WHITE_BISHOP, BLACK_BISHOP, 
+		WHITE_KNIGHT, BLACK_KNIGHT, WHITE_PAWN, BLACK_PAWN}
+	
+	maxCode := 0
+	for _, p := range pieces {
+		if int(p.Code) >= maxCode {
+			maxCode = int(p.Code) + 1
+		}
 	}
 
-	switch piece.Code {
-	case WHITE_KING.Code:
-		return whiteKingMoveBuilder
-	case BLACK_KING.Code:
-		return blackKingMoveBuilder
-	case WHITE_QUEEN.Code:
-		return whiteQueenMoveBuilder
-	case BLACK_QUEEN.Code:
-		return blackQueenMoveBuilder
-	case WHITE_ROOK.Code:
-		return whiteRookMoveBuilder
-	case BLACK_ROOK.Code:
-		return blackRookMoveBuilder
-	case WHITE_BISHOP.Code:
-		return whiteBishopMoveBuilder
-	case BLACK_BISHOP.Code:
-		return blackBishopMoveBuilder
-	case WHITE_KNIGHT.Code:
-		return whiteKnightMoveBuilder
-	case BLACK_KNIGHT.Code:
-		return blackKnightMoveBuilder
-	case WHITE_PAWN.Code:
-		return whitePawnMoveBuilder
-	case BLACK_PAWN.Code:
-		return blackPawnMoveBuilder
-	default:
+	moveGeneratorMap = make([]MoveBuilder, maxCode)
+	
+	// Map each piece code to its move builder
+	moveGeneratorMap[WHITE_KING.Code] = whiteKingMoveBuilder
+	moveGeneratorMap[BLACK_KING.Code] = blackKingMoveBuilder
+	moveGeneratorMap[WHITE_QUEEN.Code] = whiteQueenMoveBuilder
+	moveGeneratorMap[BLACK_QUEEN.Code] = blackQueenMoveBuilder
+	moveGeneratorMap[WHITE_ROOK.Code] = whiteRookMoveBuilder
+	moveGeneratorMap[BLACK_ROOK.Code] = blackRookMoveBuilder
+	moveGeneratorMap[WHITE_BISHOP.Code] = whiteBishopMoveBuilder
+	moveGeneratorMap[BLACK_BISHOP.Code] = blackBishopMoveBuilder
+	moveGeneratorMap[WHITE_KNIGHT.Code] = whiteKnightMoveBuilder
+	moveGeneratorMap[BLACK_KNIGHT.Code] = blackKnightMoveBuilder
+	moveGeneratorMap[WHITE_PAWN.Code] = whitePawnMoveBuilder
+	moveGeneratorMap[BLACK_PAWN.Code] = blackPawnMoveBuilder
+}
+
+// GetMoveGenerator returns the appropriate move generator for a given piece.
+// It uses a direct array lookup for better performance.
+func GetMoveGenerator(piece *Piece) MoveBuilder {
+	if piece == nil || int(piece.Code) >= len(moveGeneratorMap) {
 		return nil
 	}
+	return moveGeneratorMap[piece.Code]
 }
 
 type kingMoveBuilder struct {

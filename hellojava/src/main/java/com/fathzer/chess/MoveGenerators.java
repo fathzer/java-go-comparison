@@ -76,12 +76,12 @@ final class MoveGenerators {
         }
 
         @Override
-        public <T> void build(List<T> moves, Explorable board, int from, MoveConstructor<T> moveBuilder) {
+        public void build(List<Move> moves, Board board, int from) {
             for (int delta : deltas) {
                 int to = from + delta;
-                Capturable piece = board.getCapturable(to);
+                Piece piece = board.getPiece(to);
                 if (piece == null || piece.canBeCapturedBy(isWhite)) {
-                    moves.add(moveBuilder.create(from, to));
+                    moves.add(new Move(from, to));
                 }
             }
         }
@@ -132,24 +132,24 @@ final class MoveGenerators {
         }
         
         @Override
-        public <T> void build(List<T> moves, Explorable board, int from, MoveConstructor<T> moveBuilder) {
+        public void build(List<Move> moves, Board board, int from) {
             int to = from + advanceDelta;
-            if (board.getCapturable(to) == null) {
-                moves.add(moveBuilder.create(from, to));
+            if (board.getPiece(to) == null) {
+                moves.add(new Move(from, to));
                 to += advanceDelta;
-                if (twoAdvanceRank == board.getRank(from) && board.getCapturable(to)==null) {
-                    moves.add(moveBuilder.create(from, to));
+                if (twoAdvanceRank == Board.getRank(from) && board.getPiece(to)==null) {
+                    moves.add(new Move(from, to));
                 }
             }
             to = from + captureDeltaWest;
-            Capturable captured = board.getCapturable(to);
+            Piece captured = board.getPiece(to);
             if (captured != null && captured.canBeCapturedBy(isWhite)) {
-                moves.add(moveBuilder.create(from, to));
+                moves.add(new Move(from, to));
             }
             to = from + captureDeltaEast;
-            captured = board.getCapturable(to);
+            captured = board.getPiece(to);
             if (captured != null && captured.canBeCapturedBy(isWhite)) {
-                moves.add(moveBuilder.create(from, to));
+                moves.add(new Move(from, to));
             }
         }
     }
@@ -163,15 +163,15 @@ final class MoveGenerators {
             this.isWhite = isWhite;
         }
 
-        public <T> void scanDirection(List<T> moves, Explorable board, int from, int delta, MoveConstructor<T> moveBuilder) {
+        public void scanDirection(List<Move> moves, Board board, int from, int delta) {
             int to = from + delta;
             while (true) {
-                Capturable piece = board.getCapturable(to);
+                Piece piece = board.getPiece(to);
                 if (piece == null) {
-                    moves.add(moveBuilder.create(from, to));
+                    moves.add(new Move(from, to));
                 } else {
                     if (piece.canBeCapturedBy(isWhite)) {
-                        moves.add(moveBuilder.create(from, to));
+                        moves.add(new Move(from, to));
                     }
                     break;
                 }
@@ -180,9 +180,9 @@ final class MoveGenerators {
         }
 
         @Override
-        public <T> void build(List<T> moves, Explorable board, int from, MoveConstructor<T> moveBuilder) {
+        public void build(List<Move> moves, Board board, int from) {
             for (int delta : deltas) {
-                scanDirection(moves, board, from, delta, moveBuilder);
+                scanDirection(moves, board, from, delta);
             }
         }
     }

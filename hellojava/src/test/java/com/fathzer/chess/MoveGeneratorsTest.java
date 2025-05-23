@@ -99,7 +99,7 @@ class MoveGeneratorsTest {
         
         // Generate moves
         final List<Move> moves = new LinkedList<>();
-        builder.build(moves, board.explorable, Board.getSquare(fromSquare), Move::new);
+        builder.build(moves, board, Board.getSquare(fromSquare));
         
         // Verify moves
         testMoves(parseMoveList(fromSquare, expectedDestinations), moves);

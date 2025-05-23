@@ -3,9 +3,7 @@ package com.fathzer.chess;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fathzer.chess.MoveBuilder.Capturable;
-
-public enum Piece implements Capturable {
+public enum Piece {
 	BLOCKER('X', true),
 	WHITE_PAWN('P', true),
 	WHITE_KNIGHT('N', true),
@@ -49,7 +47,6 @@ public enum Piece implements Capturable {
 		return isWhite;
 	}
 
-    @Override
     public boolean canBeCapturedBy(boolean white) {
         return this!=Piece.BLOCKER && white != isWhite;
     }

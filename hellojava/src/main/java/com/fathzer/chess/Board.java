@@ -6,9 +6,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.fathzer.chess.MoveBuilder.Capturable;
-import com.fathzer.chess.MoveBuilder.Explorable;
-
 /** A tiny chess board
  * WARNING: This is a very basic implementation. It is not a chess move generator.
  * It lacks important features like king safety, en passant, castling, promotion.
@@ -17,16 +14,6 @@ public class Board {
     private final Piece[] pieces;
 	private final List<Move> playedMoves;
 	private final List<Piece> captures;
-	protected final Explorable explorable = new Explorable() {
-		@Override
-		public Capturable getCapturable(int square) {
-			return Board.this.getPiece(square);
-		}
-		@Override
-		public int getRank(int square) {
-			return Board.getRank(square);
-		}
-	};
 
 	public Board(Board copy) {
 		this.pieces = copy.pieces.clone();
@@ -98,7 +85,7 @@ public class Board {
 		return 21+ 10*(Integer.parseInt(uciSquare.substring(1)) - 1) + (file - 'a');
 	}
 	
-	private static int getRank(int square) {
+	static int getRank(int square) {
 		return (square-21)/10;
 	}
 	
@@ -120,7 +107,7 @@ public class Board {
 		for (int square = 20; square < 100; square++) {
 			Piece piece = getPiece(square);
 			if (piece != null && piece!=BLOCKER && piece.isWhite()==white) {
-				MoveGenerators.get(piece).build(moves, explorable, square, Move::new);
+				MoveGenerators.get(piece).build(moves, this, square);
 			}
 		}
 		return moves;

@@ -77,7 +77,7 @@ func testMoves(t *testing.T, fen, fromSquare, expectedDestinations string, build
 
 	// Generate moves
 	moves := make([]Move, 0, 30)
-	builder.Build(&moves, board, GetSquare(fromSquare))
+	builder.Build(&moves, board, getSquare(fromSquare))
 
 	// Parse expected moves
 	expectedMoves := parseMoveList(t, fromSquare, expectedDestinations)
@@ -85,7 +85,7 @@ func testMoves(t *testing.T, fen, fromSquare, expectedDestinations string, build
 	// Verify moves
 	t.Run(fen, func(t *testing.T) {
 		if len(expectedMoves) != len(moves) {
-			t.Errorf("Expected %d moves but got %d: %v instead of %v", 
+			t.Errorf("Expected %d moves but got %d: %v instead of %v",
 				len(expectedMoves), len(moves), movesToString(moves), expectedDestinations)
 			return
 		}
@@ -128,7 +128,7 @@ func parseMoveList(t *testing.T, fromSquare, moveList string) []Move {
 	squares := strings.Fields(moveList)
 	moves := make([]Move, 0, len(squares))
 	for _, toSquare := range squares {
-		moves = append(moves, NewMove(GetSquare(fromSquare), GetSquare(toSquare)))
+		moves = append(moves, NewMove(getSquare(fromSquare), getSquare(toSquare)))
 	}
 	return moves
 }
@@ -139,10 +139,10 @@ func movesToString(moves []Move) string {
 		return ""
 	}
 	var sb strings.Builder
-	sb.WriteString(GetUCI(moves[0].To()))
+	sb.WriteString(getUCI(moves[0].To()))
 	for i := 1; i < len(moves); i++ {
 		sb.WriteByte(' ')
-		sb.WriteString(GetUCI(moves[i].To()))
+		sb.WriteString(getUCI(moves[i].To()))
 	}
 	return sb.String()
 }

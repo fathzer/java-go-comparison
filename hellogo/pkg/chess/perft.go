@@ -66,7 +66,7 @@ func (p *Perft) perft(board *Board, result *PerftResult, depth, originalDepth in
 
 	var leafNodes int64
 	for _, move := range moves {
-		if err := board.MakeMove(move); err != nil {
+		if err := board.MakeMove(&move); err != nil {
 			// Skip invalid moves
 			continue
 		}

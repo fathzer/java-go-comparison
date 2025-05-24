@@ -47,8 +47,44 @@ Here are the performance results for 1000 decimals to 3000 decimals (The program
 A main difference between Java and Go is that the class that represent a big decimal number is quite different in both languages.
 In Java, the `java.math.BigDecimal` class is immutable, while in Go, the `big.Float` type is mutable. I presume that this is the reason why the Java program is far slower (it should make far more memory allocations).
 
-I will try to implement other tests with other algorithms to compare the performance of both languages without that kind of bias.
+### Performance through chess Perft test
+
+To have a more balanced performance comparison, I implemented a simplified chess Perft test in both languages. The Perft test is a standard way to verify the correctness of a chess engine's move generator by counting the number of nodes (possible positions) at a given depth.
+
+This part is implemented in the `pkg/chess` go module and in the `java/com/fathzer/chess` java package.
+
+Here are the performance results for Perft test at depth 6 from the initial position:
+
+| Language | Time 1st run (ms) | Time (ms) | Nodes |
+| --- | --- | --- | --- |
+| Go | 1750 | 2350 | 51,004,063 |
+| Java | 1343 | 1220 | 51,004,063 |
+
+These results show that for this particular test case, Java is twice faster than Go! I was suprised by this result as I tried to make the Go program as close possible to Java (using references instead of copying objects, using the same data structure (for instance using ArrayList and not LinkedList), etc). Here are the possible reasons that SWE-1 AI gave to me:
+
+1. Go's Slice vs Java's Array:
+
+   - Go's slice has a small overhead (pointer + length + capacity)
+   - Java's array is more lightweight in this case
+
+2. Memory Allocation Patterns:
+
+   - Go's garbage collector might behave differently under pressure
+   - Java's JIT might optimize the hot paths better
+
+3. Function Call Overhead:
+
+   - Go's method calls might have slightly more overhead
+   - Java's JIT can inline aggressively
+
+4. Bounds Checking:
+
+   - Go performs bounds checking on slice/array access
+   - Java's JIT might optimize out some bounds checks
+
+**Note:** The chess package is *simplified* in both languages, it does not implement the full chess rules. It lacks the king safety validation, the castling, the en passant capture and the pawn promotion.
 
 ### Testing
-Parsing and Pi computing have test classes in both languages.
+
+Parsing, Pi computing and chess packages have test classes in both languages.
 In Go, the tests are in the folder as the source, while in Java, the tests are in the `src/test/java` folder and sources in the `src/main/java` folder.

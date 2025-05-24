@@ -2,8 +2,8 @@ package com.fathzer.chess;
 
 import static com.fathzer.chess.Piece.BLOCKER;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /** A tiny chess board
@@ -17,15 +17,13 @@ public class Board {
 
 	public Board(Board copy) {
 		this.pieces = copy.pieces.clone();
-		this.playedMoves = new LinkedList<>(copy.playedMoves);
-		this.playedMoves.addAll(copy.playedMoves);
-		this.captures = new LinkedList<>(copy.captures);
-		this.captures.addAll(copy.captures);
+		this.playedMoves = new ArrayList<>(copy.playedMoves);
+		this.captures = new ArrayList<>(copy.captures);
 	}
 
     public Board(String fen) {
-		this.playedMoves = new LinkedList<>();
-		this.captures = new LinkedList<>();
+		this.playedMoves = new ArrayList<>();
+		this.captures = new ArrayList<>();
         this.pieces = new Piece[120];
         fillBlockers();
 		int rank = 7;
@@ -103,7 +101,7 @@ public class Board {
 	}
 
 	public List<Move> getMoves(boolean white) {
-		final List<Move> moves = new LinkedList<>();
+		final List<Move> moves = new ArrayList<>(40);
 		for (int square = 20; square < 100; square++) {
 			Piece piece = getPiece(square);
 			if (piece != null && piece!=BLOCKER && piece.isWhite()==white) {

@@ -4,6 +4,27 @@ import java.util.Arrays;
 import java.util.List;
 
 final class MoveGenerators {
+    private enum Direction {
+        NORTH(ROW_WIDTH),
+        SOUTH(-ROW_WIDTH),
+        EAST(+1),
+        WEST(-1),
+        NORTH_EAST(ROW_WIDTH+1),
+        NORTH_WEST(ROW_WIDTH-1),
+        SOUTH_EAST(-ROW_WIDTH+1),
+        SOUTH_WEST(-ROW_WIDTH-1);
+
+        private final int delta;
+
+        private Direction(int delta) {
+            this.delta = delta;
+        }
+    
+        public int getDelta() {
+            return delta;
+        }
+    }
+
     private static final int ROW_WIDTH = 10;
 
     private static final MoveBuilder WHITE_KING_MOVE_BUILDER = new KingMoveBuilder(true);
@@ -43,27 +64,6 @@ final class MoveGenerators {
 
     public static MoveBuilder get(Piece piece) {
         return MOVE_BUILDERS[piece.ordinal()];
-    }
-    
-    private enum Direction {
-        NORTH(ROW_WIDTH),
-        SOUTH(-ROW_WIDTH),
-        EAST(+1),
-        WEST(-1),
-        NORTH_EAST(ROW_WIDTH+1),
-        NORTH_WEST(ROW_WIDTH-1),
-        SOUTH_EAST(-ROW_WIDTH+1),
-        SOUTH_WEST(-ROW_WIDTH-1);
-
-        private final int delta;
-
-        private Direction(int delta) {
-            this.delta = delta;
-        }
-    
-        public int getDelta() {
-            return delta;
-        }
     }
     
     private abstract static class BasicMoveBuilder implements MoveBuilder {

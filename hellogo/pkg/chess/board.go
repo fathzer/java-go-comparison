@@ -8,15 +8,28 @@ import (
 // Board represents a chess board.
 type Board struct {
 	pieces      []*Piece
-	playedMoves []Move
+	playedMoves []*Move
 	captures    []*Piece
+}
+
+// NewBoardCopy creates a copy of an existing board.
+func NewBoardCopy(src *Board) *Board {
+	dst := &Board{
+		pieces:      make([]*Piece, len(src.pieces)),
+		playedMoves: make([]*Move, len(src.playedMoves)),
+		captures:    make([]*Piece, len(src.captures)),
+	}
+	copy(dst.pieces, src.pieces)
+	copy(dst.playedMoves, src.playedMoves)
+	copy(dst.captures, src.captures)
+	return dst
 }
 
 // NewBoard creates a new board from a FEN string.
 func NewBoard(fen string) (*Board, error) {
 	b := &Board{
 		pieces:      make([]*Piece, 120),
-		playedMoves: make([]Move, 0),
+		playedMoves: make([]*Move, 0),
 		captures:    make([]*Piece, 0),
 	}
 	b.fillBlockers()
@@ -60,19 +73,6 @@ func NewBoard(fen string) (*Board, error) {
 	return b, nil
 }
 
-// NewBoardCopy creates a copy of an existing board.
-func NewBoardCopy(src *Board) *Board {
-	dst := &Board{
-		pieces:      make([]*Piece, len(src.pieces)),
-		playedMoves: make([]Move, len(src.playedMoves)),
-		captures:    make([]*Piece, len(src.captures)),
-	}
-	copy(dst.pieces, src.pieces)
-	copy(dst.playedMoves, src.playedMoves)
-	copy(dst.captures, src.captures)
-	return dst
-}
-
 // fillBlockers fills the board with blocker pieces around the edges.
 func (b *Board) fillBlockers() {
 	// Fill top and bottom borders
@@ -88,8 +88,8 @@ func (b *Board) fillBlockers() {
 	}
 }
 
-// GetSquare converts a UCI square string to a board index.
-func GetSquare(uciSquare string) int {
+// getSquare converts a UCI square string to a board index.
+func getSquare(uciSquare string) int {
 	if len(uciSquare) != 2 {
 		panic(fmt.Sprintf("invalid UCI square: %s", uciSquare))
 	}
@@ -101,13 +101,13 @@ func GetSquare(uciSquare string) int {
 	return 21 + 10*rank + file
 }
 
-// GetRank returns the rank (0-7) of a square.
-func GetRank(square int) int {
+// getRank returns the rank (0-7) of a square.
+func getRank(square int) int {
 	return (square - 21) / 10
 }
 
-// GetUCI returns the UCI notation for a square.
-func GetUCI(square int) string {
+// getUCI returns the UCI notation for a square.
+func getUCI(square int) string {
 	square -= 21
 	file := byte(square%10) + 'a'
 	rank := byte(square/10) + '1'
@@ -116,11 +116,11 @@ func GetUCI(square int) string {
 
 // GetPiece returns the piece at the given UCI square.
 func (b *Board) GetPiece(uciSquare string) *Piece {
-	return b.pieces[GetSquare(uciSquare)]
+	return b.pieces[getSquare(uciSquare)]
 }
 
-// GetPieceByIndex returns the piece at the given board index.
-func (b *Board) GetPieceByIndex(square int) *Piece {
+// getPieceByIndex returns the piece at the given board index.
+func (b *Board) getPieceByIndex(square int) *Piece {
 	return b.pieces[square]
 }
 
@@ -140,9 +140,9 @@ func (b *Board) GetMoves(white bool) []Move {
 }
 
 // MakeMove makes a move on the board.
-func (b *Board) MakeMove(move Move) error {
-	if move == (Move{}) {
-		return fmt.Errorf("move cannot be zero value")
+func (b *Board) MakeMove(move *Move) error {
+	if move == nil {
+		return fmt.Errorf("move cannot be nil")
 	}
 
 	from := move.From()
@@ -191,12 +191,8 @@ func (b *Board) UnmakeMove() error {
 	b.pieces[from] = b.pieces[to]
 
 	// Restore the captured piece (if any)
-	if len(b.captures) > 0 {
-		b.pieces[to] = b.captures[len(b.captures)-1]
-		b.captures = b.captures[:len(b.captures)-1]
-	} else {
-		b.pieces[to] = nil
-	}
+	b.pieces[to] = b.captures[len(b.captures)-1]
+	b.captures = b.captures[:len(b.captures)-1]
 
 	return nil
 }

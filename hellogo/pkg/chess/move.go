@@ -20,15 +20,15 @@ func MoveFromUCI(uci string) (Move, error) {
 	if len(uci) != 4 {
 		return Move{}, fmt.Errorf("invalid UCI move: %s", uci)
 	}
-	from := GetSquare(uci[:2])
-	to := GetSquare(uci[2:])
+	from := getSquare(uci[:2])
+	to := getSquare(uci[2:])
 	return Move{from: from, to: to}, nil
 }
 
 // NewMoveFromStrings creates a Move from two square strings (e.g. "e2", "e4").
 func NewMoveFromStrings(fromStr, toStr string) (Move, error) {
-	from := GetSquare(fromStr)
-	to := GetSquare(toStr)
+	from := getSquare(fromStr)
+	to := getSquare(toStr)
 	return Move{from: from, to: to}, nil
 }
 
@@ -50,5 +50,5 @@ func (m Move) Equals(other Move) bool {
 // String returns the move in UCI notation.
 func (m Move) String() string {
 	// Assuming GetUCI is a function that converts square index to UCI notation.
-	return GetUCI(m.from) + GetUCI(m.to)
+	return getUCI(m.from) + getUCI(m.to)
 }

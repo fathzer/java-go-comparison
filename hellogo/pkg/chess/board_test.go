@@ -57,7 +57,7 @@ func TestCopyConstructor(t *testing.T) {
 
 	// Make a move on the copy and verify original is unchanged
 	move, _ := NewMoveFromStrings("e2", "e4")
-	copy.MakeMove(move)
+	copy.MakeMove(&move)
 
 	if copy.GetPiece("e4") == nil || copy.GetPiece("e2") != nil {
 		t.Error("Move should be applied to copy")
@@ -97,7 +97,7 @@ func TestMakeMove(t *testing.T) {
 
 	// Make a pawn move e2-e4
 	move, _ := NewMoveFromStrings("e2", "e4")
-	err := board.MakeMove(move)
+	err := board.MakeMove(&move)
 	if err != nil {
 		t.Fatalf("Failed to make move: %v", err)
 	}
@@ -117,7 +117,7 @@ func TestMakeCapture(t *testing.T) {
 
 	// Make a capture exd5
 	capture, _ := NewMoveFromStrings("e4", "d5")
-	err := board.MakeMove(capture)
+	err := board.MakeMove(&capture)
 	if err != nil {
 		t.Fatalf("Failed to make capture: %v", err)
 	}
@@ -138,7 +138,7 @@ func TestUnmakeMove(t *testing.T) {
 
 	// Make a move e2-e4
 	move, _ := NewMoveFromStrings("e2", "e4")
-	board.MakeMove(move)
+	board.MakeMove(&move)
 
 	// Unmake the move
 	err := board.UnmakeMove()
@@ -166,7 +166,7 @@ func TestUnmakeCapture(t *testing.T) {
 
 	// Make a capture exd5
 	capture, _ := NewMoveFromStrings("e4", "d5")
-	board.MakeMove(capture)
+	board.MakeMove(&capture)
 
 	// Unmake the capture
 	err := board.UnmakeMove()
@@ -219,7 +219,7 @@ func TestGetMoves(t *testing.T) {
 		t.Errorf("Expected %d white moves, got %d", len(expectedWhiteMoves), len(whiteMoves))
 		// Print actual moves for debugging
 		for i, m := range whiteMoves {
-			t.Logf("Move %d: %s -> %s", i, GetUCI(m.From()), GetUCI(m.To()))
+			t.Logf("Move %d: %s -> %s", i, getUCI(m.From()), getUCI(m.To()))
 		}
 	}
 
@@ -234,7 +234,7 @@ func TestGetMoves(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("Expected move %s -> %s not found in actual moves",
-				GetUCI(expected.From()), GetUCI(expected.To()))
+				getUCI(expected.From()), getUCI(expected.To()))
 		}
 	}
 
@@ -250,13 +250,13 @@ func TestGetMoves(t *testing.T) {
 		t.Errorf("Expected %d black moves, got %d", len(expectedBlackSquares), len(blackMoves))
 		// Print actual moves for debugging
 		for i, m := range blackMoves {
-			t.Logf("Black move %d: %s -> %s", i, GetUCI(m.From()), GetUCI(m.To()))
+			t.Logf("Black move %d: %s -> %s", i, getUCI(m.From()), getUCI(m.To()))
 		}
 	}
 
 	// Verify each actual move is in expected squares
 	for _, move := range blackMoves {
-		toSquare := GetUCI(move.To())
+		toSquare := getUCI(move.To())
 		if !expectedBlackSquares[toSquare] {
 			t.Errorf("Unexpected black move to %s", toSquare)
 		}

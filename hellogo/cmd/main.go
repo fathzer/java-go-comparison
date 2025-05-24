@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"hellogo/internal/flags"
+	"hellogo/pkg/chess"
 	hellogo "hellogo/pkg/oop"
 	"hellogo/pkg/pi"
 )
@@ -18,10 +19,19 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+
+	perftDepth, err := flags.ParsePerftDepthFlag(os.Args)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	fmt.Println("Starting OOP concepts test...")
 	oopConceptsTest()
 	fmt.Println("Starting concurrency test with", *loops, "loops...")
 	concurrencyTest(*loops)
+	fmt.Println("Starting Perft test...")
+	perftTest(*perftDepth)
 }
 
 func oopConceptsTest() {
@@ -78,4 +88,30 @@ func concurrencyTest(nbLoops int) {
 
 	fmt.Printf("duration (%d loops): %v\n", nbLoops, duration)
 	fmt.Println("result:", outputStr)
+}
+
+func perftTest(depth int) {
+	for i := 1; i <= 5; i++ {
+		board1, _ := chess.NewBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+		doPerft(depth, board1, true)
+
+		board2, _ := chess.NewBoard("rnbqkbnr/pp1ppppp/2p5/8/6P1/2P5/PP1PPP1P/RNBQKBNR")
+		doPerft(depth, board2, false)
+	}
+}
+
+func doPerft(depth int, board *chess.Board, whitePlaying bool) {
+	const durationFormat = "duration (%d depth): %v"
+	const foundFormat = "Found: %d leaf nodes. Generated: %d"
+
+	perft := chess.NewPerft()
+	start := time.Now()
+	result, err := perft.Perft(board, depth, whitePlaying)
+	if err != nil {
+		fmt.Printf("Error in perft: %v\n", err)
+		return
+	}
+	duration := time.Since(start)
+	fmt.Printf(durationFormat+"\n", depth, duration)
+	fmt.Printf(foundFormat+"\n", result.LeafNodes, result.SearchedNodes)
 }

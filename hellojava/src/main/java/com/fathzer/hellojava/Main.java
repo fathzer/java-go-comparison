@@ -9,7 +9,7 @@ import java.util.stream.IntStream;
 
 import com.fathzer.chess.optimized.Board;
 import com.fathzer.chess.optimized.Perft;
-import com.fathzer.chess.optimized.Perft.Result;
+import com.fathzer.chess.common.PerftResult;
 import com.fathzer.oop.ACoolThing;
 import com.fathzer.oop.AbstractThing;
 import com.fathzer.oop.CoolInterface;
@@ -74,7 +74,7 @@ public class Main {
         final String FOUND_FORMAT = "Found: %d leaf nodes. Generated: %d";
         final Perft perft = new Perft();
         long start = System.currentTimeMillis();
-        final Result result = perft.perft(board, depth, whitePlaying);
+        final PerftResult<Integer> result = perft.perft(board, depth, whitePlaying);
         System.out.println(String.format(DURATION_FORMAT, depth, System.currentTimeMillis() - start));
         System.out.println(String.format(FOUND_FORMAT, result.leafNodesCount(), result.searchedNodesCount()));
     }

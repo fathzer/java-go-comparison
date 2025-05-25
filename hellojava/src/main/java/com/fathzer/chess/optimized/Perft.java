@@ -1,8 +1,8 @@
 package com.fathzer.chess.optimized;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+
+import com.fathzer.chess.common.PerftResult;
 
 /**
  * <a href="https://www.chessprogramming.org/Perft">Perft, ('Performance Test')</a> is a Performance Test is a debugging function
@@ -20,46 +20,13 @@ public class Perft {
         BULK
     }
 
-    /**
-     * The results of a Perft (Performance Test) calculation.
-     */
-    public static class Result {
-        private long searchedNodesCount;
-        private long leafNodesCount;
-        private final Map<Integer, Long> nodesPerMove;
-
-        private Result() {
-             this.nodesPerMove = new HashMap<>();
-        }
-        /** Gets the number of leaf nodes
-         * @return a long
-         */
-        public long leafNodesCount() {
-            return leafNodesCount;
-        }
-
-        /** Gets the number of nodes for which the move generation has been searched
-         * @return a long
-         */
-        public long searchedNodesCount() {
-            return searchedNodesCount;
-        }
-
-        /** Gets the number of nodes per move at first depth
-         * @return a map of moves to the number of nodes
-         */
-        public Map<Integer, Long> divide() {
-            return nodesPerMove;
-        }
-    }
-    
     /** Performs a non bulk Perft (Performance Test) calculation.
      * @param board The board to run the performance test on.
      * @param depth The depth to run the performance test to
      * @param whitePlaying true if white is playing, false otherwise
      * @return a non null result
      */
-    public Result perft(Board board, int depth, boolean whitePlaying) {
+    public PerftResult<Integer> perft(Board board, int depth, boolean whitePlaying) {
         return perft(board, depth, Type.NON_BULK, whitePlaying);
     }
 
@@ -70,22 +37,22 @@ public class Perft {
      * @param whitePlaying true if white is playing, false otherwise
      * @return a non null result
      */
-    public Result perft(Board board, int depth, Type type, boolean whitePlaying) {
+    public PerftResult<Integer> perft(Board board, int depth, Type type, boolean whitePlaying) {
         if (board==null) {
             throw new IllegalArgumentException("Board cannot be null");
         }
     	if (depth<=0) {
     		throw new IllegalArgumentException("Depth must be greater than 0");
     	}
-        final Result result = new Result();
+        final PerftResult<Integer> result = new PerftResult<>();
         final IntList[] moveListCache = new IntList[depth+1];
         Arrays.setAll(moveListCache, i -> new IntList());
-        result.leafNodesCount = perft(moveListCache, board, result, depth, depth, type, whitePlaying);
+        result.setLeafNodesCount(perft(moveListCache, board, result, depth, depth, type, whitePlaying));
         return result;
     }
 
-    private long perft(IntList[] moveListCache, Board board, Result result, int depth, int originalDepth, Type type, boolean whitePlaying) {
-        result.searchedNodesCount++;
+    private long perft(IntList[] moveListCache, Board board, PerftResult<Integer> result, int depth, int originalDepth, Type type, boolean whitePlaying) {
+        result.incrementSearchedNodesCount();
         final IntList moves = moveListCache[depth];
         board.getMoves(moves, whitePlaying);
         if (depth == 1 && type == Type.NON_BULK) {
@@ -99,7 +66,7 @@ public class Perft {
             board.makeMove(move);
             long moveCount = perft(moveListCache, board, result, depth - 1, originalDepth, type, !whitePlaying);
             if (depth == originalDepth) {
-                result.nodesPerMove.put(move, moveCount);
+                result.setNodesPerMove(move, moveCount);
             }
             leafNodesCount += moveCount;
             board.unmakeMove();

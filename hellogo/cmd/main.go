@@ -113,5 +113,5 @@ func doPerft(depth int, board *chess.Board, whitePlaying bool) {
 	}
 	duration := time.Since(start)
 	fmt.Printf(durationFormat+"\n", depth, duration)
-	fmt.Printf(foundFormat+"\n", result.LeafNodes, result.SearchedNodes)
+	fmt.Printf(foundFormat+"\n", result.LeafNodesCount(), result.SearchedNodesCount())
 }

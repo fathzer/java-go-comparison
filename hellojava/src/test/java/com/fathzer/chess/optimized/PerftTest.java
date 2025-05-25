@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import com.fathzer.chess.optimized.Perft.Result;
+import com.fathzer.chess.common.PerftResult;
 
 class PerftTest {
 
@@ -17,11 +17,11 @@ class PerftTest {
 		assertThrows(IllegalArgumentException.class, () -> perft.perft(board, -1, false));
 		assertThrows(IllegalArgumentException.class, () -> perft.perft(board, 0, false));
 		
-		final Result result1 = perft.perft(board, 1, true);
+		final PerftResult<Integer> result1 = perft.perft(board, 1, true);
 		assertEquals(20, result1.leafNodesCount());
 		result1.divide().forEach((move, count) -> assertEquals(1, count));	
 		
-		final Result result2 = perft.perft(board, 2, true);
+		final PerftResult<Integer> result2 = perft.perft(board, 2, true);
 		assertEquals(400, result2.leafNodesCount());
 		
 		final Board board2 = new Board("rnbqkbnr/pp1ppppp/2p5/8/6P1/2P5/PP1PPP1P/RNBQKBNR");

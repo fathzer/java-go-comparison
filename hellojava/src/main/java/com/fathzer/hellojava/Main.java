@@ -7,9 +7,9 @@ import java.math.RoundingMode;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
-import com.fathzer.chess.Board;
-import com.fathzer.chess.Perft;
-import com.fathzer.chess.Perft.Result;
+import com.fathzer.chess.optimized.Board;
+import com.fathzer.chess.optimized.Perft;
+import com.fathzer.chess.optimized.Perft.Result;
 import com.fathzer.oop.ACoolThing;
 import com.fathzer.oop.AbstractThing;
 import com.fathzer.oop.CoolInterface;

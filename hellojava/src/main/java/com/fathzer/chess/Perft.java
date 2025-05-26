@@ -26,7 +26,7 @@ public class Perft {
      * @param whitePlaying true if white is playing, false otherwise
      * @return a non null result
      */
-    public PerftResult<Move> perft(Board board, int depth, boolean whitePlaying) {
+    public PerftResult perft(Board board, int depth, boolean whitePlaying) {
         return perft(board, depth, Type.NON_BULK, whitePlaying);
     }
 
@@ -37,19 +37,19 @@ public class Perft {
      * @param whitePlaying true if white is playing, false otherwise
      * @return a non null result
      */
-    public PerftResult<Move> perft(Board board, int depth, Type type, boolean whitePlaying) {
+    public PerftResult perft(Board board, int depth, Type type, boolean whitePlaying) {
         if (board==null) {
             throw new IllegalArgumentException("Board cannot be null");
         }
     	if (depth<=0) {
     		throw new IllegalArgumentException("Depth must be greater than 0");
     	}
-        final PerftResult<Move> result = new PerftResult<>();
+        final PerftResult result = new PerftResult();
         result.setLeafNodesCount(perft(board, result, depth, depth, type, whitePlaying));
         return result;
     }
 
-    private long perft(Board board, PerftResult<Move> result, int depth, int originalDepth, Type type, boolean whitePlaying) {
+    private long perft(Board board, PerftResult result, int depth, int originalDepth, Type type, boolean whitePlaying) {
         result.incrementSearchedNodesCount();
         final List<Move> moves = board.getMoves(whitePlaying);
         if (depth == 1 && type == Type.NON_BULK) {
@@ -61,9 +61,6 @@ public class Perft {
         for (Move move : moves) {
             board.makeMove(move);
             long moveCount = perft(board, result, depth - 1, originalDepth, type, !whitePlaying);
-            if (depth == originalDepth) {
-                result.setNodesPerMove(move, moveCount);
-            }
             leafNodesCount += moveCount;
             board.unmakeMove();
         }

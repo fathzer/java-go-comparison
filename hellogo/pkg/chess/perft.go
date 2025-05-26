@@ -3,18 +3,7 @@ package chess
 import (
 	"fmt"
 
-	"hellogo/pkg/chess/common"
-)
-
-// Type represents the type of Perft calculation.
-// Please note that since the move generator generates only legal moves, both types should yield the same result.
-type PerftType int
-
-const (
-	// NonBulk is a non-bulk Perft (Performance Test) calculation; moves at last depth are not played.
-	NonBulk PerftType = iota
-	// Bulk is a bulk Perft (Performance Test) calculation.
-	Bulk
+	chesscommon "hellogo/pkg/chess/common"
 )
 
 // Perft performs performance testing on move generation.
@@ -27,12 +16,12 @@ func NewPerft() *Perft {
 
 // Perft performs a non-bulk Perft (Performance Test) calculation.
 // Perft performs a non-bulk Perft (Performance Test) calculation.
-func (p *Perft) Perft(board *Board, depth int, whitePlaying bool) (*chesscommon.PerftResult[Move], error) {
-	return p.PerftWithType(board, depth, NonBulk, whitePlaying)
+func (p *Perft) Perft(board *Board, depth int, whitePlaying bool) (*chesscommon.PerftResult, error) {
+	return p.PerftWithType(board, depth, chesscommon.NonBulk, whitePlaying)
 }
 
 // PerftWithType performs a Perft (Performance Test) calculation with the specified type.
-func (p *Perft) PerftWithType(board *Board, depth int, ptype PerftType, whitePlaying bool) (*chesscommon.PerftResult[Move], error) {
+func (p *Perft) PerftWithType(board *Board, depth int, ptype chesscommon.PerftType, whitePlaying bool) (*chesscommon.PerftResult, error) {
 	if board == nil {
 		return nil, fmt.Errorf("board cannot be nil")
 	}
@@ -40,19 +29,19 @@ func (p *Perft) PerftWithType(board *Board, depth int, ptype PerftType, whitePla
 		return nil, fmt.Errorf("depth must be greater than 0")
 	}
 
-	result := chesscommon.NewPerftResult[Move]()
+	result := chesscommon.NewPerftResult()
 
 	result.SetLeafNodesCount(p.perft(board, result, depth, depth, ptype, whitePlaying))
 	return result, nil
 }
 
 // perft is the internal recursive function that performs the Perft calculation.
-func (p *Perft) perft(board *Board, result *chesscommon.PerftResult[Move], depth, originalDepth int, ptype PerftType, whitePlaying bool) int64 {
+func (p *Perft) perft(board *Board, result *chesscommon.PerftResult, depth, originalDepth int, ptype chesscommon.PerftType, whitePlaying bool) int64 {
 	result.IncrementSearchedNodesCount()
 
 	moves := board.GetMoves(whitePlaying)
 
-	if depth == 1 && ptype == NonBulk {
+	if depth == 1 && ptype == chesscommon.NonBulk {
 		return int64(len(moves))
 	} else if depth == 0 {
 		return 1
@@ -66,11 +55,6 @@ func (p *Perft) perft(board *Board, result *chesscommon.PerftResult[Move], depth
 		}
 
 		moveCount := p.perft(board, result, depth-1, originalDepth, ptype, !whitePlaying)
-
-		if depth == originalDepth {
-			result.SetNodesPerMove(move, moveCount)
-		}
-
 		leafNodes += moveCount
 
 		// Unmake the move to restore the board state

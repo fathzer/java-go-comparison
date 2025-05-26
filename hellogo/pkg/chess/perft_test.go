@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	errUnexpected = "Unexpected error: %v"
+	errUnexpected  = "Unexpected error: %v"
 	errCreateBoard = "Failed to create board: %v"
 )
 
@@ -17,7 +17,7 @@ func TestPerft(t *testing.T) {
 
 	t.Run("Invalid inputs", func(t *testing.T) {
 		perft := NewPerft()
-		
+
 		_, err = perft.Perft(nil, 1, false)
 		if err == nil {
 			t.Error("Expected error for nil board")
@@ -34,7 +34,6 @@ func TestPerft(t *testing.T) {
 		}
 	})
 
-
 	t.Run("Starting position", func(t *testing.T) {
 		perft := NewPerft()
 
@@ -45,11 +44,6 @@ func TestPerft(t *testing.T) {
 			}
 			if result.LeafNodesCount() != 20 {
 				t.Errorf("Expected 20 leaf nodes, got %d", result.LeafNodesCount())
-			}
-			for _, count := range result.Divide() {
-				if count != 1 {
-					t.Errorf("Expected each move to have 1 node, got %d", count)
-				}
 			}
 		})
 

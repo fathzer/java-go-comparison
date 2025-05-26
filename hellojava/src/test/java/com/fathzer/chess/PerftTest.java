@@ -17,11 +17,10 @@ class PerftTest {
 		assertThrows(IllegalArgumentException.class, () -> perft.perft(board, -1, false));
 		assertThrows(IllegalArgumentException.class, () -> perft.perft(board, 0, false));
 		
-		final PerftResult<Move> result1 = perft.perft(board, 1, true);
+		final PerftResult result1 = perft.perft(board, 1, true);
 		assertEquals(20, result1.leafNodesCount());
-		result1.divide().forEach((move, count) -> assertEquals(1, count));	
 		
-		final PerftResult<Move> result2 = perft.perft(board, 2, true);
+		final PerftResult result2 = perft.perft(board, 2, true);
 		assertEquals(400, result2.leafNodesCount());
 		
 		final Board board2 = new Board("rnbqkbnr/pp1ppppp/2p5/8/6P1/2P5/PP1PPP1P/RNBQKBNR");

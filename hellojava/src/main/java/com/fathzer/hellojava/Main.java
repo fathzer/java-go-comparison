@@ -7,8 +7,6 @@ import java.math.RoundingMode;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
-import com.fathzer.chess.optimized.Board;
-import com.fathzer.chess.optimized.Perft;
 import com.fathzer.chess.common.PerftResult;
 import com.fathzer.oop.ACoolThing;
 import com.fathzer.oop.AbstractThing;
@@ -25,7 +23,9 @@ public class Main {
             System.out.println("Starting concurrency test with " + piLoops + " loops...");
             concurrencyTest(piLoops);
             System.out.println("Starting Perft test...");
-            perftTest(perftDepth);
+            perftTest(perftDepth, false);
+        	System.out.println("Starting optimized perft tests");
+            perftTest(perftDepth, true);
         } catch (IllegalArgumentException e) {
             System.err.println(e.getMessage());
             System.exit(1);
@@ -62,20 +62,36 @@ public class Main {
         System.out.println("result: " + result.get().divide(BigDecimal.valueOf(nbLoops), 10, RoundingMode.HALF_UP));
     }
 
-    private static void perftTest(int depth) {
-        for (int i = 1; i <= 5; i++) {
-            doPerft(depth, new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"), true);
-            doPerft(depth, new Board("rnbqkbnr/pp1ppppp/2p5/8/6P1/2P5/PP1PPP1P/RNBQKBNR"), false);
+    private static final String PERFT_FORMAT = "Found: %d leaf nodes with %d move generation at depth %d in %d ms for %s";
+    
+    private static void perftTest(int depth, boolean fast) {
+        for (int i = 1; i <= 3; i++) {
+            final String start = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+            final String other = "rnbqkbnr/pp1ppppp/2p5/8/6P1/2P5/PP1PPP1P/RNBQKBNR";
+            if (fast) {
+				doFastPerft(start, true, depth);
+				doFastPerft(other, false, depth);
+            } else {
+				doPerft(start, true, depth);
+				doPerft(other, false, depth);
+            }
         }
     }
-
-    private static void doPerft(int depth, Board board, boolean whitePlaying) {
-        final String DURATION_FORMAT = "duration (%d depth): %d ms";
-        final String FOUND_FORMAT = "Found: %d leaf nodes. Generated: %d";
-        final Perft perft = new Perft();
+    
+    private static void doPerft(String fen, boolean whitePlaying, int depth) {
         long start = System.currentTimeMillis();
-        final PerftResult<Integer> result = perft.perft(board, depth, whitePlaying);
-        System.out.println(String.format(DURATION_FORMAT, depth, System.currentTimeMillis() - start));
-        System.out.println(String.format(FOUND_FORMAT, result.leafNodesCount(), result.searchedNodesCount()));
+        final com.fathzer.chess.Perft perft = new com.fathzer.chess.Perft();
+        com.fathzer.chess.Board board = new com.fathzer.chess.Board(fen);
+        final PerftResult result = perft.perft(board, depth, whitePlaying);
+        System.out.println(String.format(PERFT_FORMAT, result.leafNodesCount(), result.searchedNodesCount(), depth, (System.currentTimeMillis() - start), fen));
+    }
+    
+    
+    private static void doFastPerft(String fen, boolean whitePlaying, int depth) {
+        long start = System.currentTimeMillis();
+        final com.fathzer.chess.optimized.Perft perft = new com.fathzer.chess.optimized.Perft();
+        com.fathzer.chess.optimized.Board board = new com.fathzer.chess.optimized.Board(fen);
+        final PerftResult result = perft.perft(board, depth, whitePlaying);
+        System.out.println(String.format(PERFT_FORMAT, result.leafNodesCount(), result.searchedNodesCount(), depth, (System.currentTimeMillis() - start), fen));
     }
 }

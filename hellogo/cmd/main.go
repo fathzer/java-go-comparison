@@ -91,20 +91,15 @@ func concurrencyTest(nbLoops int) {
 }
 
 func perftTest(depth int) {
-	for i := 1; i <= 5; i++ {
-		board1, _ := chess.NewBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
-		doPerft(depth, board1, true)
-
-		board2, _ := chess.NewBoard("rnbqkbnr/pp1ppppp/2p5/8/6P1/2P5/PP1PPP1P/RNBQKBNR")
-		doPerft(depth, board2, false)
+	for i := 1; i <= 3; i++ {
+		doPerft("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", true, depth)
+		doPerft("rnbqkbnr/pp1ppppp/2p5/8/6P1/2P5/PP1PPP1P/RNBQKBNR", false, depth)
 	}
 }
 
-func doPerft(depth int, board *chess.Board, whitePlaying bool) {
-	const durationFormat = "duration (%d depth): %v"
-	const foundFormat = "Found: %d leaf nodes. Generated: %d"
-
+func doPerft(fen string, whitePlaying bool, depth int) {
 	perft := chess.NewPerft()
+	board, _ := chess.NewBoard(fen)
 	start := time.Now()
 	result, err := perft.Perft(board, depth, whitePlaying)
 	if err != nil {
@@ -112,6 +107,6 @@ func doPerft(depth int, board *chess.Board, whitePlaying bool) {
 		return
 	}
 	duration := time.Since(start)
-	fmt.Printf(durationFormat+"\n", depth, duration)
-	fmt.Printf(foundFormat+"\n", result.LeafNodesCount(), result.SearchedNodesCount())
+	fmt.Printf("Found: %d leaf nodes with %d move generation at depth %d in %v for %v\n",
+		result.LeafNodesCount(), result.SearchedNodesCount(), depth, duration, fen)
 }

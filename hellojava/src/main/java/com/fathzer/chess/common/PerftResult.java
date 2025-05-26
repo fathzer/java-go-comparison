@@ -1,18 +1,14 @@
 package com.fathzer.chess.common;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * The results of a Perft (Performance Test) calculation.
  */
-public class PerftResult<T> {
+public class PerftResult {
     private long searchedNodesCount;
     private long leafNodesCount;
-    private final Map<T, Long> nodesPerMove;
 
     public PerftResult() {
-         this.nodesPerMove = new HashMap<>();
+    	super();
     }
     
     /** Gets the number of leaf nodes
@@ -29,22 +25,11 @@ public class PerftResult<T> {
         return searchedNodesCount;
     }
 
-    /** Gets the number of nodes per move at first depth
-     * @return a map of moves to the number of nodes
-     */
-    public Map<T, Long> divide() {
-        return nodesPerMove;
-    }
-
     public void incrementSearchedNodesCount() {
         searchedNodesCount++;
     }
 
     public void setLeafNodesCount(long leafNodesCount) {
         this.leafNodesCount = leafNodesCount;
-    }
-
-    public void setNodesPerMove(T move, long nodes) {
-        nodesPerMove.put(move, nodes);
     }
 }

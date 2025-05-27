@@ -89,7 +89,7 @@ class BoardTest {
         board.makeMove(move);
         
         // Unmake the move
-        board.unmakeMove();
+        board.unmakeMove(move);
         
         // Board should be back to original state
         for (char rank = '1'; rank < '8'; rank++) {
@@ -111,7 +111,7 @@ class BoardTest {
         board.makeMove(capture);
         
         // Unmake the capture
-        board.unmakeMove();
+        board.unmakeMove(capture);
         
         // Board should be back to original state
         for (char rank = '1'; rank < '8'; rank++) {

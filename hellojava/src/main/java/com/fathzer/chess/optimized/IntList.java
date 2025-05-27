@@ -2,7 +2,7 @@ package com.fathzer.chess.optimized;
 
 /**
  * A resizable array implementation for primitive int values.
- * This class provides similar functionality to ArrayList<Integer> but avoids autoboxing overhead.
+ * This class provides similar functionality to ArrayList&lt;Integer&gt; but avoids autoboxing overhead.
  */
 public class IntList {
     private static final int DEFAULT_CAPACITY = 64;
@@ -70,7 +70,7 @@ public class IntList {
      *
      * @param index index of the element to return
      * @return the element at the specified position in this list
-     * @throws IndexOutOfBoundsException if the index is out of range (index < 0 || index >= size())
+     * @throws IndexOutOfBoundsException if the index is out of range (index &lt; 0 || index &gt;= size())
      */
     public int get(int index) {
         return elements[index];

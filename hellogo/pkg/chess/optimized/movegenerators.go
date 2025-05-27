@@ -130,11 +130,11 @@ func getKnightDeltas() []int {
 // PawnMoveBuilder generates moves for pawns.
 // WARNING: This is a very basic implementation. It does not manage en passant, promotion.
 type pawnMoveBuilder struct {
-	isWhite        bool
-	advanceDelta   int
+	isWhite          bool
+	advanceDelta     int
 	captureDeltaWest int
 	captureDeltaEast int
-	twoAdvanceRank  int
+	twoAdvanceRank   int
 }
 
 func newPawnMoveBuilder(isWhite bool) *pawnMoveBuilder {
@@ -150,8 +150,8 @@ func newPawnMoveBuilder(isWhite bool) *pawnMoveBuilder {
 	}
 
 	return &pawnMoveBuilder{
-		isWhite:         isWhite,
-		advanceDelta:    advanceDelta,
+		isWhite:          isWhite,
+		advanceDelta:     advanceDelta,
 		captureDeltaWest: captureDeltaWest,
 		captureDeltaEast: captureDeltaEast,
 		twoAdvanceRank:   twoAdvanceRank,
@@ -224,5 +224,5 @@ func (s *sliderMoveBuilder) Build(moves *IntList, board *Board, from int) {
 
 // canBeCapturedBy returns true if the piece can be captured by a piece of the given color.
 func canBeCapturedBy(piece int, isWhite bool) bool {
-	return isWhite != (piece < BlackPawn)
+	return piece != Blocker && isWhite != (piece < BlackPawn)
 }

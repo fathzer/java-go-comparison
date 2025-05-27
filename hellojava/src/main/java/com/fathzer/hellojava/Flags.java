@@ -11,7 +11,7 @@ public class Flags {
     }
 
     public static int parsePerftDepth(String[] args) {
-        int perftDepth = 5; // default value
+        int perftDepth = 6; // default value
         perftDepth = parseIntegerArgument(args, "--perftDepth=", perftDepth);
         perftDepth = parseIntegerArgument(args, "-pd=", perftDepth);
         return perftDepth;

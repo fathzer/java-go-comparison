@@ -9,6 +9,7 @@ import (
 
 	"hellogo/internal/flags"
 	"hellogo/pkg/chess"
+	"hellogo/pkg/chess/optimized"
 	hellogo "hellogo/pkg/oop"
 	"hellogo/pkg/pi"
 )
@@ -26,15 +27,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("Starting OOP concepts test...")
 	oopConceptsTest()
-	fmt.Println("Starting concurrency test with", *loops, "loops...")
 	concurrencyTest(*loops)
-	fmt.Println("Starting Perft test...")
 	perftTest(*perftDepth)
 }
 
 func oopConceptsTest() {
+	fmt.Println("Starting OOP concepts test...")
 	// Demonstrate abstract thing interface
 	aThing := hellogo.NewACoolThing("my abstract thing")
 	aThing.DoSomething()
@@ -53,6 +52,7 @@ func oopConceptsTest() {
 }
 
 func concurrencyTest(nbLoops int) {
+	fmt.Println("Starting concurrency test with", nbLoops, "loops...")
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 
@@ -91,22 +91,51 @@ func concurrencyTest(nbLoops int) {
 }
 
 func perftTest(depth int) {
+	fmt.Println("Starting Perft test...")
+	perftTestWithType(depth, false)
+	fmt.Println("Starting optimized perft tests")
+	perftTestWithType(depth, true)
+}
+
+func perftTestWithType(depth int, fast bool) {
 	for i := 1; i <= 3; i++ {
-		doPerft("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", true, depth)
-		doPerft("rnbqkbnr/pp1ppppp/2p5/8/6P1/2P5/PP1PPP1P/RNBQKBNR", false, depth)
+		startFEN := "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+		otherFEN := "rnbqkbnr/pp1ppppp/2p5/8/6P1/2P5/PP1PPP1P/RNBQKBNR"
+		if fast {
+			doFastPerft(startFEN, true, depth)
+			doFastPerft(otherFEN, false, depth)
+		} else {
+			doPerft(startFEN, true, depth)
+			doPerft(otherFEN, false, depth)
+		}
 	}
 }
 
 func doPerft(fen string, whitePlaying bool, depth int) {
-	perft := chess.NewPerft()
-	board, _ := chess.NewBoard(fen)
 	start := time.Now()
+	board, err := chess.NewBoard(fen)
+	if err != nil {
+		fmt.Printf("Error creating board: %v\n", err)
+		return
+	}
+	perft := chess.NewPerft()
 	result, err := perft.Perft(board, depth, whitePlaying)
 	if err != nil {
 		fmt.Printf("Error in perft: %v\n", err)
 		return
 	}
-	duration := time.Since(start)
-	fmt.Printf("Found: %d leaf nodes with %d move generation at depth %d in %v for %v\n",
+	formatResult(result, depth, time.Since(start), fen)
+}
+
+func doFastPerft(fen string, whitePlaying bool, depth int) {
+	start := time.Now()
+	board := optimized.NewBoard(fen)
+	perft := optimized.NewPerft()
+	result := perft.Perft(board, depth, whitePlaying)
+	formatResult(result, depth, time.Since(start), fen)
+}
+
+func formatResult(result interface{ LeafNodesCount() int64; SearchedNodesCount() int64 }, depth int, duration time.Duration, fen string) {
+	fmt.Printf("Found: %d leaf nodes with %d move generation at depth %d in %v for %s\n",
 		result.LeafNodesCount(), result.SearchedNodesCount(), depth, duration, fen)
 }

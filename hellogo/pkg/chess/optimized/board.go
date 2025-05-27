@@ -5,15 +5,13 @@ import "strconv"
 
 // Board represents a chess board with piece placement and move history.
 type Board struct {
-	pieces      []int
-	playedMoves *IntList
+	pieces []int
 }
 
 // NewBoard creates a new board from a FEN string.
 func NewBoard(fen string) *Board {
 	b := &Board{
-		playedMoves: NewIntList(),
-		pieces:      make([]int, 120),
+		pieces: make([]int, 120),
 	}
 	b.fillBlockers()
 
@@ -23,7 +21,7 @@ func NewBoard(fen string) *Board {
 		if c >= '1' && c <= '8' {
 			count := int(c - '0')
 			if file+count > 8 {
-				panic("Too many pieces on rank " + strconv.Itoa(rank+1))
+				panic("Invalid FEN: too many pieces on rank " + strconv.Itoa(rank+1))
 			}
 			for i := 0; i < count; i++ {
 				b.pieces[21+rank*10+file] = None
@@ -32,6 +30,9 @@ func NewBoard(fen string) *Board {
 		} else if c == '/' {
 			if file != 8 {
 				panic("Invalid FEN: incomplete rank " + strconv.Itoa(rank+1))
+			}
+			if rank == 0 {
+				panic("Invalid FEN: too many ranks")
 			}
 			rank--
 			file = 0
@@ -44,6 +45,12 @@ func NewBoard(fen string) *Board {
 			file++
 		}
 	}
+
+	// Check if we've processed all 8 ranks
+	if rank != 0 || file != 8 {
+		panic("Invalid FEN: incomplete board position")
+	}
+
 	return b
 }
 
@@ -52,8 +59,7 @@ func NewBoardCopy(original *Board) *Board {
 	pieces := make([]int, len(original.pieces))
 	copy(pieces, original.pieces)
 	return &Board{
-		pieces:      pieces,
-		playedMoves: NewIntListFrom(original.playedMoves),
+		pieces: pieces,
 	}
 }
 
@@ -100,9 +106,22 @@ func (b *Board) GetPiece(uciSquare string) int {
 	return b.pieces[GetSquare(uciSquare)]
 }
 
-// getPiece returns the piece at a given internal square index.
+// getPiece returns the piece at the given square
 func (b *Board) getPiece(square int) int {
 	return b.pieces[square]
+}
+
+// GetMoves generates all possible moves for the given color and appends them to the provided IntList.
+// It returns the updated IntList.
+func (b *Board) GetMoves(moves *IntList, white bool) *IntList {
+	moves.Clear()
+	for square := 20; square < 100; square++ {
+		piece := b.getPiece(square)
+		if piece != None && piece != Blocker && IsWhite(piece) == white {
+			Get(piece).Build(moves, b, square)
+		}
+	}
+	return moves
 }
 
 // MakeMove applies a move to the board.
@@ -113,15 +132,10 @@ func (b *Board) MakeMove(move int) {
 	// Move the piece
 	b.pieces[to] = b.pieces[from]
 	b.pieces[from] = None
-
-	// Record the move with the captured piece
-	b.playedMoves.Add(move)
 }
 
 // UnmakeMove undoes the last move made on the board.
-func (b *Board) UnmakeMove() {
-	// Get the last move and remove it from history
-	move := b.playedMoves.RemoveLast()
+func (b *Board) UnmakeMove(move int) {
 	from := From(move)
 	to := To(move)
 

@@ -78,7 +78,7 @@ func testMovesWithFEN(t *testing.T, fen, fromSquare, expectedDestinations string
 	builder.Build(moves, board, GetSquare(fromSquare))
 
 	// Parse expected moves
-	expectedMoves := parseMoveList(t, board, fromSquare, expectedDestinations)
+	expectedMoves := parseMoveList(board, fromSquare, expectedDestinations)
 
 	// Verify moves
 	testMoves(t, expectedMoves, moves)
@@ -122,7 +122,7 @@ func testMoves(t *testing.T, expectedMoves, moves *IntList) {
 }
 
 // parseMoveList parses a space-separated string of UCI moves into an IntList
-func parseMoveList(t *testing.T, board *Board, fromSquare, moveList string) *IntList {
+func parseMoveList(board *Board, fromSquare, moveList string) *IntList {
 	moves := NewIntList()
 	if moveList == "" {
 		return moves

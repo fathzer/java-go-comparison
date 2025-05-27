@@ -11,15 +11,11 @@ import java.util.Arrays;
  */
 public class Board {
     private final int[] pieces;
-	private final IntList playedMoves;
-
 	public Board(Board copy) {
 		this.pieces = copy.pieces.clone();
-		this.playedMoves = new IntList(copy.playedMoves);
 	}
 
     public Board(String fen) {
-		this.playedMoves = new IntList();
         this.pieces = new int[120];
         fillBlockers();
 		int rank = 7;
@@ -114,14 +110,9 @@ public class Board {
 	    // Move the piece
 	    pieces[to] = pieces[from];
 	    pieces[from] = NONE; // Empty the source square
-	    
-	    // Record the move with the captured piece
-	    playedMoves.add(move);
 	}
 
-	public void unmakeMove() {
-	    // Get the last move and remove it from history
-	    int move = playedMoves.removeLast();
+	public void unmakeMove(int move) {
 	    int from = from(move);
 	    int to = to(move);
 	    

@@ -18,14 +18,9 @@ public class Main {
             int piLoops = Flags.parsePiLoops(args);
             int perftDepth = Flags.parsePerftDepth(args);
 
-            System.out.println("Starting OOP concepts test...");
             oopConceptsTest();
-            System.out.println("Starting concurrency test with " + piLoops + " loops...");
             concurrencyTest(piLoops);
-            System.out.println("Starting Perft test...");
-            perftTest(perftDepth, false);
-        	System.out.println("Starting optimized perft tests");
-            perftTest(perftDepth, true);
+            perftTest(perftDepth);
         } catch (IllegalArgumentException e) {
             System.err.println(e.getMessage());
             System.exit(1);
@@ -33,6 +28,7 @@ public class Main {
     }
 
     private static void oopConceptsTest() {
+        System.out.println("Starting OOP concepts test...");
         AbstractThing aThing = new ACoolThing("my abstract thing");
         ((CoolInterface)aThing).doSomethingCool();
         aThing.doSomething();
@@ -47,6 +43,7 @@ public class Main {
     }
 
     private static void concurrencyTest(int nbLoops) {
+        System.out.println("Starting concurrency test with " + nbLoops + " loops...");
         if (nbLoops < 1) {
             throw new IllegalArgumentException("Number of loops must be at least 1");
         }
@@ -60,6 +57,13 @@ public class Main {
         });
         System.out.println("duration ("+nbLoops+" loops): " + (System.currentTimeMillis() - start)+" ms");
         System.out.println("result: " + result.get().divide(BigDecimal.valueOf(nbLoops), 10, RoundingMode.HALF_UP));
+    }
+
+    private static void perftTest(int depth) {
+        System.out.println("Starting Perft test...");
+        perftTest(depth, false);
+        System.out.println("Starting optimized perft tests");
+        perftTest(depth, true);
     }
 
     private static final String PERFT_FORMAT = "Found: %d leaf nodes with %d move generation at depth %d in %d ms for %s";

@@ -57,7 +57,7 @@ public class Perft {
             board.makeMove(move);
             long moveCount = perft(moveListCache, board, result, depth - 1, originalDepth, type, !whitePlaying);
             leafNodesCount += moveCount;
-            board.unmakeMove();
+            board.unmakeMove(move);
         }
         return leafNodesCount;
     }

@@ -31,3 +31,21 @@ func (p *PerftResult) IncrementSearchedNodesCount() {
 func (p *PerftResult) SetLeafNodesCount(count int64) {
 	p.leafNodesCount = count
 }
+
+// Equals checks if two PerftResult instances are equal.
+func (p *PerftResult) Equals(other *PerftResult) bool {
+	if other == nil {
+		return false
+	}
+	return p.searchedNodesCount == other.searchedNodesCount && p.leafNodesCount == other.leafNodesCount
+}
+
+// HashCode returns a hash code for the PerftResult.
+// This implementation follows the same logic as Java's Objects.hash()
+func (p *PerftResult) HashCode() int {
+	const prime = 31
+	result := int(1)
+	result = prime*result + int(p.searchedNodesCount^(p.searchedNodesCount>>32))
+	result = prime*result + int(p.leafNodesCount^(p.leafNodesCount>>32))
+	return result
+}

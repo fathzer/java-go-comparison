@@ -1,20 +1,17 @@
 package com.fathzer.hellojava;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Flags {
     private Flags() {}
 
-    public static int parsePiLoops(String[] args) {
-        int piLoops = 2000; // default value
-        piLoops = parseIntegerArgument(args, "--piLoops=", piLoops);
-        piLoops = parseIntegerArgument(args, "-pl=", piLoops);
-        return piLoops;
-    }
-
-    public static int parsePerftDepth(String[] args) {
-        int perftDepth = 6; // default value
-        perftDepth = parseIntegerArgument(args, "--perftDepth=", perftDepth);
-        perftDepth = parseIntegerArgument(args, "-pd=", perftDepth);
-        return perftDepth;
+    public static int parseIntegerArgument(String[] args, String shortPrefix, String longPrefix, int defaultValue) {
+        checkIllegalUsage(args, shortPrefix, longPrefix);
+        int arg = defaultValue;
+        arg = parseIntegerArgument(args, "--"+longPrefix+"=", arg);
+        arg = parseIntegerArgument(args, "-"+shortPrefix+"=", arg);
+        return arg;
     }
 
     private static int parseIntegerArgument(String[] args, String prefix, int defaultValue) {
@@ -30,9 +27,42 @@ public class Flags {
         return defaultValue;
     }
 
-    public static void printUsage() {
-        System.out.println("Usage: java Main [--piLoops=<number>] [--perftDepth=<number>]");
-        System.out.println("  --piLoops=<number>  Number of Pi calculations to perform (default: 2000)");
-        System.out.println("  --perftDepth=<number>  Depth of Perft (Performance Test) to perform (default: 5)");
+    private static void checkIllegalUsage(String[] args, String shortPrefix, String longPrefix) {
+        for (String arg : args) {
+            if (arg.startsWith("--"+shortPrefix+"=") || arg.startsWith("-"+longPrefix+"=")) {
+                throw new IllegalArgumentException(String.format("%s is not supported. Use -%s or --%s instead", arg, shortPrefix, longPrefix));
+            }
+        }
+    }
+
+    public static String parseStringArgument(String[] args, String shortPrefix, String longPrefix, String defaultValue) {
+        checkIllegalUsage(args, shortPrefix, longPrefix);
+        String arg = defaultValue;
+        arg = parseStringArgument(args, "--"+longPrefix+"=", arg);
+        arg = parseStringArgument(args, "-"+shortPrefix+"=", arg);
+        return arg;
+    }
+
+    private static String parseStringArgument(String[] args, String prefix, String defaultValue) {
+        for (String arg : args) {
+            if (arg.startsWith(prefix)) {
+                return arg.substring(prefix.length());
+            }
+        }
+        return defaultValue;
+    }
+
+    public static boolean parseBooleanArgument(String[] args, String shortPrefix, String longPrefix) {
+        checkIllegalBooleanUsage(args, shortPrefix, longPrefix);
+        final List<String> asList = Arrays.asList(args);
+        return asList.contains("--"+longPrefix) || asList.contains("-"+shortPrefix);
+    }
+
+    private static void checkIllegalBooleanUsage(String[] args, String shortPrefix, String longPrefix) {
+        for (String arg : args) {
+            if (arg.equals("--"+shortPrefix) || arg.equals("-"+longPrefix)) {
+                throw new IllegalArgumentException(String.format("%s is not supported. Use -%s or --%s instead", arg, shortPrefix, longPrefix));
+            }
+        }
     }
 }

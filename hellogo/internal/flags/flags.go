@@ -1,61 +1,89 @@
 package flags
 
 import (
-	"flag"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
-func ParseLoopsFlag(args []string) (*int, error) {
-	for _, arg := range args[1:] {
-		if strings.HasPrefix(arg, "-piLoops") && !strings.HasPrefix(arg, "--") {
-			return nil, fmt.Errorf("Error: -piLoops is not supported. Use -pl or --piLoops instead.")
-		}
-		if strings.HasPrefix(arg, "--pl") {
-			return nil, fmt.Errorf("Error: --pl is not supported. Use -pl or --piLoops instead.")
-		}
+// parseIntFlag parses an integer command line flag with the given parameters.
+// It handles both short and long form flags and performs validation.
+// shortFlag: the short form of the flag (e.g., "pl" for -pl)
+// longFlag: the long form of the flag (e.g., "piLoops" for --piLoops)
+// defaultValue: the default value if the flag is not provided
+// args: command line arguments
+func ParseIntFlag(shortFlag, longFlag string, defaultValue int, args []string) (*int, error) {
+	if err := checkIllegalUsage(shortFlag, longFlag, args); err != nil {
+		return nil, err
 	}
-	var newArgs []string
-	for _, arg := range args {
-		if strings.HasPrefix(arg, "--piLoops") {
-			arg = strings.Replace(arg, "--piLoops", "-pl", 1)
-		}
-		newArgs = append(newArgs, arg)
-	}
-	fs := flag.NewFlagSet("test", flag.ContinueOnError)
-	loops := fs.Int("pl", 2000, "number of Pi calculations to perform")
-	err := fs.Parse(newArgs[1:])
+	var value *int = &defaultValue
+	value, err := parseOneIntegerArgument("-"+shortFlag+"=", defaultValue, args)
 	if err != nil {
 		return nil, err
 	}
-	return loops, nil
+	value, err = parseOneIntegerArgument("--"+longFlag+"=", *value, args)
+	if err != nil {
+		return nil, err
+	}
+	return value, nil
 }
 
-// ParsePerftDepthFlag parses the perft depth flag from command line arguments.
-// It supports both -pd and --perftDepth flags.
-func ParsePerftDepthFlag(args []string) (*int, error) {
+func checkIllegalUsage(shortFlag, longFlag string, args []string) error {
 	for _, arg := range args[1:] {
-		if strings.HasPrefix(arg, "-perftDepth") && !strings.HasPrefix(arg, "--") {
-			return nil, fmt.Errorf("Error: -perftDepth is not supported. Use -pd or --perftDepth instead.")
-		}
-		if strings.HasPrefix(arg, "--pd") {
-			return nil, fmt.Errorf("Error: --pd is not supported. Use -pd or --perftDepth instead.")
+		if strings.HasPrefix(arg, "--"+shortFlag+"=") || strings.HasPrefix(arg, "-"+longFlag+"=") {
+			return fmt.Errorf("error: %s is not supported. Use -%s or --%s instead", arg, shortFlag, longFlag)
 		}
 	}
+	return nil
+}
 
-	var newArgs []string
-	for _, arg := range args {
-		if strings.HasPrefix(arg, "--perftDepth") {
-			arg = strings.Replace(arg, "--perftDepth", "-pd", 1)
+func parseOneIntegerArgument(prefix string, defaultValue int, args []string) (*int, error) {
+	for _, arg := range args[1:] {
+		if strings.HasPrefix(arg, prefix) {
+			i, err := strconv.Atoi(arg[len(prefix):])
+			if err != nil {
+				return nil, err
+			}
+			return &i, nil
 		}
-		newArgs = append(newArgs, arg)
 	}
+	return &defaultValue, nil
+}
 
-	fs := flag.NewFlagSet("test", flag.ContinueOnError)
-	perftDepth := fs.Int("pd", 6, "depth for Perft test")
-	err := fs.Parse(newArgs[1:])
-	if err != nil {
+func ParseStringFlag(shortFlag, longFlag string, defaultValue string, args []string) (*string, error) {
+	if err := checkIllegalUsage(shortFlag, longFlag, args); err != nil {
 		return nil, err
 	}
-	return perftDepth, nil
+	for _, arg := range args[1:] {
+		if strings.HasPrefix(arg, "-"+shortFlag+"=") {
+			result := arg[len("-"+shortFlag+"="):]
+			return &result, nil
+		}
+		if strings.HasPrefix(arg, "--"+longFlag+"=") {
+			result := arg[len("--"+longFlag+"="):]
+			return &result, nil
+		}
+	}
+	return &defaultValue, nil
+}
+
+// ParseBoolFlag checks if a boolean flag is present in the command line arguments.
+// Boolean flags are specified without a value (e.g., -b or --blackPlaying).
+// It returns true if either the short or long form of the flag is present, false otherwise.
+// It returns an error if an illegal flag format is detected.
+func ParseBoolFlag(shortFlag, longFlag string, args []string) (bool, error) {
+	// Check for illegal usages like --shortFlag or -longFlag
+	for _, arg := range args[1:] {
+		if arg == "--"+shortFlag || arg == "-"+longFlag {
+			return false, fmt.Errorf("invalid flag: %s is not supported. Use -%s or --%s", arg, shortFlag, longFlag)
+		}
+	}
+
+	// Check for the presence of the flag
+	for _, arg := range args[1:] {
+		if arg == "-"+shortFlag || arg == "--"+longFlag {
+			return true, nil
+		}
+	}
+	return false, nil
 }

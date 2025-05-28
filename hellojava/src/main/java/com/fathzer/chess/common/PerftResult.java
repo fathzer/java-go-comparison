@@ -1,5 +1,7 @@
 package com.fathzer.chess.common;
 
+import java.util.Objects;
+
 /**
  * The results of a Perft (Performance Test) calculation.
  */
@@ -31,5 +33,18 @@ public class PerftResult {
 
     public void setLeafNodesCount(long leafNodesCount) {
         this.leafNodesCount = leafNodesCount;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        PerftResult that = (PerftResult) obj;
+        return searchedNodesCount == that.searchedNodesCount && leafNodesCount == that.leafNodesCount;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(searchedNodesCount, leafNodesCount);
     }
 }

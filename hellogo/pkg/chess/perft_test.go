@@ -4,72 +4,86 @@ import (
 	"testing"
 )
 
+const (
+	errUnexpected  = "Unexpected error: %v"
+	errCreateBoard = "Failed to create board: %v"
+)
+
 func TestPerft(t *testing.T) {
 	board, err := NewBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
 	if err != nil {
-		t.Fatalf("Failed to create board: %v", err)
+		t.Fatalf(errCreateBoard, err)
 	}
 
-	perft := NewPerft()
+	t.Run("Invalid inputs", func(t *testing.T) {
+		perft := NewPerft()
 
-	// Test invalid inputs
-	_, err = perft.Perft(nil, 1, false)
-	if err == nil {
-		t.Error("Expected error for nil board")
-	}
-
-	_, err = perft.Perft(board, -1, false)
-	if err == nil {
-		t.Error("Expected error for negative depth")
-	}
-
-	_, err = perft.Perft(board, 0, false)
-	if err == nil {
-		t.Error("Expected error for zero depth")
-	}
-
-	// Test depth 1
-	result1, err := perft.Perft(board, 1, true)
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
-	}
-	if result1.LeafNodes != 20 {
-		t.Errorf("Expected 20 leaf nodes, got %d", result1.LeafNodes)
-	}
-	for _, count := range result1.NodesPerMove {
-		if count != 1 {
-			t.Errorf("Expected each move to have 1 node, got %d", count)
+		_, err = perft.Perft(nil, 1, false)
+		if err == nil {
+			t.Error("Expected error for nil board")
 		}
-	}
 
-	// Test depth 2
-	result2, err := perft.Perft(board, 2, true)
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
-	}
-	if result2.LeafNodes != 400 {
-		t.Errorf("Expected 400 leaf nodes, got %d", result2.LeafNodes)
-	}
+		_, err = perft.Perft(board, -1, false)
+		if err == nil {
+			t.Error("Expected error for negative depth")
+		}
 
-	// Test with different position
-	board2, err := NewBoard("rnbqkbnr/pp1ppppp/2p5/8/6P1/2P5/PP1PPP1P/RNBQKBNR")
-	if err != nil {
-		t.Fatalf("Failed to create board: %v", err)
-	}
+		_, err = perft.Perft(board, 0, false)
+		if err == nil {
+			t.Error("Expected error for zero depth")
+		}
+	})
 
-	result3, err := perft.Perft(board2, 1, false)
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
-	}
-	if result3.LeafNodes != 21 {
-		t.Errorf("Expected 21 leaf nodes, got %d", result3.LeafNodes)
-	}
+	t.Run("Starting position", func(t *testing.T) {
+		perft := NewPerft()
 
-	result4, err := perft.Perft(board2, 2, false)
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
-	}
-	if result4.LeafNodes != 463 {
-		t.Errorf("Expected 463 leaf nodes, got %d", result4.LeafNodes)
-	}
+		t.Run("Depth 1", func(t *testing.T) {
+			result, err := perft.Perft(board, 1, true)
+			if err != nil {
+				t.Fatalf(errUnexpected, err)
+			}
+			if result.LeafNodesCount() != 20 {
+				t.Errorf("Expected 20 leaf nodes, got %d", result.LeafNodesCount())
+			}
+		})
+
+		t.Run("Depth 2", func(t *testing.T) {
+			result, err := perft.Perft(board, 2, true)
+			if err != nil {
+				t.Fatalf(errUnexpected, err)
+			}
+			if result.LeafNodesCount() != 400 {
+				t.Errorf("Expected 400 leaf nodes, got %d", result.LeafNodesCount())
+			}
+		})
+	})
+
+	t.Run("Custom position", func(t *testing.T) {
+		board2, err := NewBoard("rnbqkbnr/pp1ppppp/2p5/8/6P1/2P5/PP1PPP1P/RNBQKBNR")
+		if err != nil {
+			t.Fatalf(errCreateBoard, err)
+		}
+
+		perft := NewPerft()
+
+		t.Run("Depth 1", func(t *testing.T) {
+			result, err := perft.Perft(board2, 1, false)
+			if err != nil {
+				t.Fatalf(errUnexpected, err)
+			}
+			if result.LeafNodesCount() != 21 {
+				t.Errorf("Expected 21 leaf nodes, got %d", result.LeafNodesCount())
+			}
+		})
+
+		t.Run("Depth 2", func(t *testing.T) {
+			result, err := perft.Perft(board2, 2, false)
+			if err != nil {
+				t.Fatalf(errUnexpected, err)
+			}
+			if result.LeafNodesCount() != 463 {
+				t.Errorf("Expected 463 leaf nodes, got %d", result.LeafNodesCount())
+			}
+		})
+	})
 }

@@ -8,33 +8,58 @@ import (
 	"time"
 
 	"hellogo/internal/flags"
-	"hellogo/pkg/chess"
+	"hellogo/internal/perft"
 	hellogo "hellogo/pkg/oop"
 	"hellogo/pkg/pi"
 )
 
 func main() {
-	loops, err := flags.ParseLoopsFlag(os.Args)
+	piLoops, err := flags.ParseIntFlag("pl", "piLoops", 2000, os.Args)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	perftDepth, err := flags.ParsePerftDepthFlag(os.Args)
+	perftDepth, err := flags.ParseIntFlag("pd", "perftDepth", 6, os.Args)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	fen, err := flags.ParseStringFlag("f", "fen", "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", os.Args)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	perftLoops, err := flags.ParseIntFlag("ptl", "perftLoops", 5, os.Args)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	blackPlaying, err := flags.ParseBoolFlag("b", "blackPlaying", os.Args)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	optimizedPerft, err := flags.ParseBoolFlag("o", "optimizedPerft", os.Args)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	coolingTime, err := flags.ParseIntFlag("pct", "perftCoolingTime", 0, os.Args)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	fmt.Println("Starting OOP concepts test...")
 	oopConceptsTest()
-	fmt.Println("Starting concurrency test with", *loops, "loops...")
-	concurrencyTest(*loops)
-	fmt.Println("Starting Perft test...")
-	perftTest(*perftDepth)
+	concurrencyTest(*piLoops)
+	if *perftLoops > 0 {
+		perftTest(*fen, !blackPlaying, *perftDepth, *perftLoops, time.Duration(*coolingTime)*time.Millisecond, optimizedPerft)
+	}
 }
 
 func oopConceptsTest() {
+	fmt.Println("Starting OOP concepts test...")
 	// Demonstrate abstract thing interface
 	aThing := hellogo.NewACoolThing("my abstract thing")
 	aThing.DoSomething()
@@ -53,6 +78,7 @@ func oopConceptsTest() {
 }
 
 func concurrencyTest(nbLoops int) {
+	fmt.Println("Starting concurrency test with", nbLoops, "loops...")
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 
@@ -90,28 +116,56 @@ func concurrencyTest(nbLoops int) {
 	fmt.Println("result:", outputStr)
 }
 
-func perftTest(depth int) {
-	for i := 1; i <= 5; i++ {
-		board1, _ := chess.NewBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
-		doPerft(depth, board1, true)
-
-		board2, _ := chess.NewBoard("rnbqkbnr/pp1ppppp/2p5/8/6P1/2P5/PP1PPP1P/RNBQKBNR")
-		doPerft(depth, board2, false)
+func perftTest(fen string, whitePlaying bool, depth int, nbLoops int, pauseDuration time.Duration, optimized bool) {
+	optimizedStr := ""
+	if optimized {
+		optimizedStr = "optimized "
 	}
-}
+	fmt.Printf("Starting %sPerft test with %dms cooling time before every perft computation ...\n", optimizedStr, pauseDuration.Milliseconds())
 
-func doPerft(depth int, board *chess.Board, whitePlaying bool) {
-	const durationFormat = "duration (%d depth): %v"
-	const foundFormat = "Found: %d leaf nodes. Generated: %d"
-
-	perft := chess.NewPerft()
-	start := time.Now()
-	result, err := perft.Perft(board, depth, whitePlaying)
+	// First execution with detailed output
+	time.Sleep(pauseDuration)
+	firstResult, err := perft.Run(fen, whitePlaying, depth, optimized)
 	if err != nil {
-		fmt.Printf("Error in perft: %v\n", err)
+		fmt.Printf("Error running perft test: %v\n", err)
 		return
 	}
-	duration := time.Since(start)
-	fmt.Printf(durationFormat+"\n", depth, duration)
-	fmt.Printf(foundFormat+"\n", result.LeafNodes, result.SearchedNodes)
+
+	durationMs := firstResult.Duration.Milliseconds()
+	leafNodes := firstResult.Result.LeafNodesCount()
+	searchedNodes := firstResult.Result.SearchedNodesCount()
+	fmt.Printf("First execution found: %d leaf nodes with %d move generation at depth %d in %d ms for %s\n",
+		leafNodes, searchedNodes, depth, durationMs, fen)
+
+	if nbLoops <= 1 {
+		return
+	}
+
+	// Subsequent executions with progress tracking
+	var totalDuration int64 = 0
+	nbLoops--
+	for i := 1; i <= nbLoops; i++ {
+		fmt.Print(".")
+		time.Sleep(pauseDuration)
+
+		loopResult, err := perft.Run(fen, whitePlaying, depth, optimized)
+		if err != nil {
+			fmt.Printf("\nError running perft test on loop %d: %v\n", i, err)
+			return
+		}
+
+		// Verify results match using the Equals method for consistency with Java version
+		if !loopResult.Result.Equals(firstResult.Result) {
+			fmt.Printf("\nResult mismatch at loop %d\n", i)
+			return
+		}
+
+		totalDuration += loopResult.Duration.Milliseconds()
+	}
+
+	// Print final summary
+	if nbLoops > 0 {
+		avgDuration := totalDuration / int64(nbLoops)
+		fmt.Printf("\nduration (%d loops): %d ms (average: %d ms)\n", nbLoops, totalDuration, avgDuration)
+	}
 }

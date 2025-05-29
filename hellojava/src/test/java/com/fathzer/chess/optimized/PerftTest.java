@@ -1,4 +1,4 @@
-package com.fathzer.chess;
+package com.fathzer.chess.optimized;
 
 import static org.junit.jupiter.api.Assertions.*;
 

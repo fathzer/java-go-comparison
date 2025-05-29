@@ -20,7 +20,7 @@ func TestParseLoopsFlag(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ParseLoopsFlag(tt.args)
+			got, err := ParseIntFlag("pl", "piLoops", 2000, tt.args)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseLoopsFlag() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -32,29 +32,57 @@ func TestParseLoopsFlag(t *testing.T) {
 	}
 }
 
-func TestParsePerftDepthFlag(t *testing.T) {
+func TestParseStringFlag(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    []string
-		want    int
+		want    string
 		wantErr bool
 	}{
-		{"default", []string{"cmd"}, 6, false},
-		{"short flag", []string{"cmd", "-pd=4"}, 4, false},
-		{"long flag", []string{"cmd", "--perftDepth=5"}, 5, false},
-		{"reject -perftDepth", []string{"cmd", "-perftDepth=2"}, 0, true},
-		{"reject --pd", []string{"cmd", "--pd=2"}, 0, true},
+		{"default", []string{"cmd"}, "default-value", false},
+		{"short flag", []string{"cmd", "-f=test"}, "test", false},
+		{"long flag", []string{"cmd", "--fen=rnbqkbnr/8/8/8/8/8/8/RNBQKBNR"}, "rnbqkbnr/8/8/8/8/8/8/RNBQKBNR", false},
+		{"reject -fen", []string{"cmd", "-fen=test"}, "", true},
+		{"reject --f", []string{"cmd", "--f=test"}, "", true},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ParsePerftDepthFlag(tt.args)
+			got, err := ParseStringFlag("f", "fen", "default-value", tt.args)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ParsePerftDepthFlag() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ParseStringFlag() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !tt.wantErr && got != nil && *got != tt.want {
-				t.Errorf("ParsePerftDepthFlag() = %v, want %v", *got, tt.want)
+				t.Errorf("ParseStringFlag() = %v, want %v", *got, tt.want)
+			}
+		})
+	}
+}
+
+func TestParseBoolFlag(t *testing.T) {
+	tests := []struct {
+		name    string
+		args    []string
+		want    bool
+		wantErr bool
+	}{
+		{"default", []string{"cmd"}, false, false},
+		{"short flag", []string{"cmd", "-b"}, true, false},
+		{"long flag", []string{"cmd", "--blackPlaying"}, true, false},
+		{"reject -blackPlaying", []string{"cmd", "-blackPlaying"}, false, true},
+		{"reject --b", []string{"cmd", "--b"}, false, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ParseBoolFlag("b", "blackPlaying", tt.args)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ParseBoolFlag() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !tt.wantErr && got != tt.want {
+				t.Errorf("ParseBoolFlag() = %v, want %v", got, tt.want)
 			}
 		})
 	}

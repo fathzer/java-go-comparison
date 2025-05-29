@@ -61,16 +61,16 @@ To have a more balanced performance comparison, I implemented a simplified chess
 This part is implemented in the `pkg/chess` go module and in the `java/com/fathzer/chess` java package.
 I also implemented an optimized version, that makes no memory allocation during the move generation (in `pkg/chess/optimized` and `java/com/fathzer/chess/optimized`).
 
-Here are the performance results for Perft test at depth 6 from the initial position (51,004,063 move generation, 120,909,581 leaf nodes):
+Here are the performance results for singled threaded Perft test at depth 6 from the initial position (51,004,063 move generation, 120,909,581 leaf nodes):
 
 | Language | Time 1st run (ms) | average time after 1st (ms) |
-| --- | --- | --- | --- |
+| --- | --- | --- |
 | Go | 1720 | 2160 |
 | Java | 1250 | 1450 |
 | Go (optimized) | 890 | 900 |
 | Java optimized | 900 | 1080 |
 
-These results show that there's is no absolute truth. In the non optimized perft test, Java is faster, and slower after optmization. Maybe Go garbage collector is less efficient that java one.
+These results show that there's is no absolute truth. In the non optimized perft test, Java is faster, and slower after optmization. Maybe Go's garbage collector is less efficient than java one.
 
 **Note:** The chess package is *simplified* in both languages, it does not implement the full chess rules. It lacks the king safety validation, the castling, the en passant capture and the pawn promotion.
 
